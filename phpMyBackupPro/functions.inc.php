@@ -562,6 +562,13 @@ function PMBP_dump($db,$tables,$data,$drop,$zip,$comment) {
     $backupfile=PMBP_EXPORT_DIR.$backupfile;
                     
     if ($con=@mysql_connect($CONF['sql_host'],$CONF['sql_user'],$CONF['sql_passwd'])) {
+    $connection_method='SET CHARACTER SET';
+    $charset='utf8';
+//    @mysql_query("{$connection_method} {$charset}");
+	 if (function_exists('mysql_set_charset'))
+	 {
+	     mysql_set_charset($charset);
+	 }
 
         //create comment
         $out="# MySQL dump of database '".$db."' on host '".$CONF['sql_host']."'\n";

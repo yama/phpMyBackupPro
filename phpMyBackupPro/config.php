@@ -125,7 +125,7 @@ if (isset($_POST['submit'])) {
 }
 
 
-PMBP_print_header(ereg_replace(".*/","",$_SERVER['SCRIPT_NAME']));
+PMBP_print_header(preg_replace('@.*/@',"",$_SERVER['SCRIPT_NAME']));
 if (isset($out)) echo $out;
 
 // validation type of some variables
@@ -136,13 +136,13 @@ $conf=array(C_TIMELIMIT=>"timelimit",C_FTP_PORT=>"ftp_port",C_DEL_TIME=>"del_tim
 foreach($CONF as $key=>$value) {
     if (array_key_exists($key,$validate)) {
         switch($validate[$key]) {
-            case "int": if (!eregi("^[0-9]*$",$value)) echo "<div class=\"red\">'".array_search($key,$conf)."' ".C_WRONG_TYPE."</div>\n";
+            case "int": if (!preg_match('@^[0-9]+$@',$value)) echo '<div class="red">' . array_search($key,$conf) . "' " . C_WRONG_TYPE . "</div>\n";
                 break;
-            case "float": if (!eregi("^[0-9]*\.?[0-9]*$",$value)) echo "<div class=\"red\">'".array_search($key,$conf)."' ".C_WRONG_TYPE."</div>\n";
+            case "float": if (!preg_match('@^(\\|\$)?(0|-?[1-9]\d*|-?(0|[1-9]\d*)\.\d+)$@',$value)) echo "<div class=\"red\">'".array_search($key,$conf)."' ".C_WRONG_TYPE."</div>\n";
                 break;
             case "email": if ($value||$CONF['email_use']) {
                     foreach(explode(",",$value) as $value2) {
-                        if (!eregi("^\ *[הצüִײÜa-zA-Z0-9_-]+(\.[הצüִײÜa-zA-Z0-9\._-]+)*@([הצüִײÜa-zA-Z0-9-]+\.)+([a-z]{2,4})$",$value2)) {
+                        if (!preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/', $value2)) {
                             echo "<div class=\"red\">'".array_search($key,$conf)."' ".C_WRONG_TYPE."</div>\n";
                             break;
                         }

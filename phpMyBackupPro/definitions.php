@@ -195,7 +195,7 @@ if (!$_SESSION['multi_user_mode']) {
 @mkdir(PMBP_EXPORT_DIR,0777);
 
 // check if language was just changed in config.php
-if (isset($_POST['lang']) && ereg_replace(".*/","",$_SERVER['PHP_SELF'])=="config.php") $CONF['lang']=$_POST['lang'];
+if (isset($_POST['lang']) && preg_replace('@.*/@',"",$_SERVER['PHP_SELF'])=="config.php") $CONF['lang']=$_POST['lang'];
 
 // include language.inc.php
 if (!isset($CONF['lang'])) $CONF['lang']="english";

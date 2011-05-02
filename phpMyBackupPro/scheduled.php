@@ -35,7 +35,7 @@ if (!isset($_POST['man_dirs'])) $_POST['man_dirs']=FALSE;
 if (!isset($_POST['comments'])) $_POST['comments']=FALSE;
 if (!isset($_POST['packed'])) $_POST['packed']=FALSE;
 
-PMBP_print_header(ereg_replace(".*/","",$_SERVER['SCRIPT_NAME']));
+PMBP_print_header(preg_replace('@.*/@',"",$_SERVER['SCRIPT_NAME']));
 
 // if first use or no db-connection possible
 if (!@mysql_connect($CONF['sql_host'],$CONF['sql_user'],$CONF['sql_passwd'])) echo "<div class=\"red\">".I_SQL_ERROR."</div><br>";

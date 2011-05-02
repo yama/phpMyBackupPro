@@ -94,7 +94,7 @@ echo " ".PMBP_VERSION."</th></tr>\n";
     exit;
 }
 
-PMBP_print_header(ereg_replace(".*/","",$_SERVER['SCRIPT_NAME']));
+PMBP_print_header(preg_replace('@.*/@',"",$_SERVER['SCRIPT_NAME']));
 
 // if first use or no db-connection possible
 if (!$con) {

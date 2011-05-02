@@ -485,8 +485,8 @@ function PMBP_exec_sql($file,$con,$linespersession=false,$noFile=false) {
     	if (!$linespersession) $_GET['start']++;
     	  
         // handle DOS and Mac encoded linebreaks
-        $dumpline=ereg_replace("\r\n$","\n",$dumpline);
-        $dumpline=ereg_replace("\r$","\n",$dumpline);
+        $dumpline=preg_replace("@\r\n$@","\n",$dumpline);
+        $dumpline=preg_replace("@\r$@","\n",$dumpline);
 
         // skip comments and blank lines only if NOT in parents    
         if (!$inparents) {
@@ -524,7 +524,7 @@ function PMBP_exec_sql($file,$con,$linespersession=false,$noFile=false) {
         }
 
         // execute query if end of query detected (; as last character) AND NOT in parents
-        if (ereg(";$",trim($dumpline)) && !$inparents) {
+        if (preg_match('@;$@',trim($dumpline)) && !$inparents) {
             if (!mysql_query(trim($query),$con)) {
                 $error=SQ_ERROR." ".($linenumber+1)."<br>".nl2br(htmlentities(trim($query)))."\n<br>".htmlentities(mysql_error());
                 break;
@@ -946,7 +946,7 @@ function PMBP_email_store($attachments,$backup_info) {
     // send to all every addresses
     foreach($all_emails as $email) {
         // verify email
-        if (!eregi("^\ *[a-zA-Z0-9_-]+(\.[a-zA-Z0-9\._-]+)*@([a-zA-Z0-9-]+\.)+([a-z]{2,4})$",$email)) {
+        if (!preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/',$email)) {
             $out.="<div class=\"red\">".F_MAIL_1."</div>\n";
             continue;
         }
@@ -1132,7 +1132,7 @@ function PMBP_get_db_list() {
 
 // in dependency on $mode different modes can be selected (see below)
 function PMBP_file_info($mode,$path) {
-    $filename=ereg_replace(".*/","",$path);
+    $filename=preg_replace('@.*/@',"",$path);
     $parts=explode(".",$filename);
 
     switch($mode) {

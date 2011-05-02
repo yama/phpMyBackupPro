@@ -30,7 +30,7 @@ if ($_SESSION['multi_user_mode'] && !$PMBP_MU_CONF['allow_sql_queries']) {
     header("Location: index.php");
 }
 
-PMBP_print_header(ereg_replace(".*/","",$_SERVER['SCRIPT_NAME']));
+PMBP_print_header(preg_replace('@.*/@',"",$_SERVER['SCRIPT_NAME']));
 
 // used variables
 $sql_print=FALSE;

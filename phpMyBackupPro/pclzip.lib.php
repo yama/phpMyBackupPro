@@ -22,13 +22,8 @@
 //   The use of this software is at the risk of the user.
 //
 // --------------------------------------------------------------------------------
-// $Id: pclzip.lib.php 6468 2009-11-26 20:41:03Z volschin $
+// $Id: pclzip.lib.php,v 1.60 2009/09/30 21:01:04 vblavet Exp $
 // --------------------------------------------------------------------------------
-
-if (!defined('PGV_PHPGEDVIEW')) {
-	header('HTTP/1.0 403 Forbidden');
-	exit;
-}
 
   // ----- Constants
   if (!defined('PCLZIP_READ_BLOCK_SIZE')) {
@@ -3933,10 +3928,10 @@ if (!defined('PGV_PHPGEDVIEW')) {
       }
     }
 
-	// ----- Change abort status
-	if ($p_entry['status'] == "aborted") {
-      $p_entry['status'] = "skipped";
-	}
+  	// ----- Change abort status
+  	if ($p_entry['status'] == "aborted") {
+        $p_entry['status'] = "skipped";
+  	}
 	
     // ----- Look for post-extract callback
     elseif (isset($p_options[PCLZIP_CB_POST_EXTRACT])) {
@@ -4208,32 +4203,32 @@ if (!defined('PGV_PHPGEDVIEW')) {
     // ----- Look if extraction should be done
     if ($p_entry['status'] == 'ok') {
 
-    // ----- Do the extraction (if not a folder)
+      // ----- Do the extraction (if not a folder)
       if (!(($p_entry['external']&0x00000010)==0x00000010)) {
-      // ----- Look for not compressed file
-//      if ($p_entry['compressed_size'] == $p_entry['size'])
-      if ($p_entry['compression'] == 0) {
-
-        // ----- Reading the file
-        $p_string = @fread($this->zip_fd, $p_entry['compressed_size']);
+        // ----- Look for not compressed file
+  //      if ($p_entry['compressed_size'] == $p_entry['size'])
+        if ($p_entry['compression'] == 0) {
+  
+          // ----- Reading the file
+          $p_string = @fread($this->zip_fd, $p_entry['compressed_size']);
+        }
+        else {
+  
+          // ----- Reading the file
+          $v_data = @fread($this->zip_fd, $p_entry['compressed_size']);
+          
+          // ----- Decompress the file
+          if (($p_string = @gzinflate($v_data)) === FALSE) {
+              // TBC
+          }
+        }
+  
+        // ----- Trace
       }
       else {
-
-        // ----- Reading the file
-        $v_data = @fread($this->zip_fd, $p_entry['compressed_size']);
-        
-        // ----- Decompress the file
-        if (($p_string = @gzinflate($v_data)) === FALSE) {
-            // TBC
-        }
+          // TBC : error : can not extract a folder in a string
       }
-
-      // ----- Trace
-    }
-    else {
-        // TBC : error : can not extract a folder in a string
-    }
-
+      
     }
 
   	// ----- Change abort status
@@ -5028,8 +5023,7 @@ if (!defined('PGV_PHPGEDVIEW')) {
     }
 
     // ----- Create the directory
-    if (!@mkdir($p_dir, PGV_PERM_EXE))
-    
+    if (!@mkdir($p_dir, 0777))
     {
       // ----- Error log
       PclZip::privErrorLog(PCLZIP_ERR_DIR_CREATE_FAIL, "Unable to create directory '$p_dir'");

@@ -932,7 +932,7 @@ function PMBP_email_store($attachments,$backup_info) {
  	}
     srand((double)microtime()*1000000);
     $boundary="=_".md5(uniqid(rand()).microtime());
-    $parts[-1]="Content-Type: text/plain; charset=\"".BD_CHARSET_EMAIL."\"".$lb.$lb.$mailtext.$lb;
+    $parts[-1]="Content-Type: text/plain; charset=\"".BD_CHARSET_HTML."\"".$lb.$lb.$mailtext.$lb;
     for ($i=0;$i<count($attachments);$i++) {
     	$bodies[$i]=file_get_contents($attachments[$i]);
         $bodies[$i]=rtrim(chunk_split(base64_encode($bodies[$i]), 76, $lb)).$lb;
@@ -946,7 +946,7 @@ function PMBP_email_store($attachments,$backup_info) {
     // send to all every addresses
     foreach($all_emails as $email) {
         // verify email
-        if (!eregi("^\ *[äöüÄÖÜa-zA-Z0-9_-]+(\.[äöüÄÖÜa-zA-Z0-9\._-]+)*@([äöüÄÖÜa-zA-Z0-9-]+\.)+([a-z]{2,4})$",$email)) {
+        if (!eregi("^\ *[a-zA-Z0-9_-]+(\.[a-zA-Z0-9\._-]+)*@([a-zA-Z0-9-]+\.)+([a-z]{2,4})$",$email)) {
             $out.="<div class=\"red\">".F_MAIL_1."</div>\n";
             continue;
         }
@@ -958,6 +958,9 @@ function PMBP_email_store($attachments,$backup_info) {
     } else {
         $subject=F_MAIL_4." ".$CONF['sitename'];
     }
+    mb_language(BD_LANG_SHORTCUT);
+	mb_internal_encoding(BD_CHARSET_HTML);
+    $subject = mb_encode_mimeheader($subject, BD_CHARSET_EMAIL, "B");
 
     // send mail
     if (!@mail($CONF['email'],$subject,$encoded['body'],$headers)) $out.="<div class=\"red\">".F_MAIL_5.".</div>\n";

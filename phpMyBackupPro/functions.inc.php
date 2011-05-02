@@ -144,7 +144,7 @@ echo " </tr>
 
     echo " </tr>
 </table>
-<table width=\"".$width."\">
+<table width=\"".$width."\" class=\"maintable\">
  <colgroup>
   <col width=\"20\">
   <col width=\"*\">

@@ -127,10 +127,17 @@ if ($mode=="incl") {
 
 // print html if web mode
 if ($mode=="web") {
-    PMBP_print_header(ereg_replace(".*/","",$_SERVER['SCRIPT_NAME']));
+    PMBP_print_header(preg_replace('@.*/@',"",$_SERVER['SCRIPT_NAME']));
 
     // if first use or no db-connection possible
     if (!@mysql_connect($CONF['sql_host'],$CONF['sql_user'],$CONF['sql_passwd'])) echo "<div class=\"red\">".I_SQL_ERROR."</div><br>\n";
+    $connection_method='SET CHARACTER SET';
+    $charset='utf8';
+//    @mysql_query("{$connection_method} {$charset}");
+	 if (function_exists('mysql_set_charset'))
+	 {
+	     mysql_set_charset($charset);
+	 }
 
     // check if ftp connection is possible
     if ($CONF['ftp_use'] || $CONF['dir_backup']) {

@@ -24,7 +24,7 @@
 */
 
 require_once("login.php");
-PMBP_print_header(ereg_replace(".*/","",$_SERVER['SCRIPT_NAME']));
+PMBP_print_header(preg_replace('@.*/@', '', $_SERVER['SCRIPT_NAME']));
 
 // if PMBP_GLOBAL_CONF.php is not writeable
 if(!is_writeable(PMBP_GLOBAL_CONF)) echo '<div class="red_left">' . I_CONF_ERROR . "</div>\n";

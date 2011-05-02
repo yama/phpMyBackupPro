@@ -24,8 +24,8 @@
 */
 
 require_once("login.php");
-            
-PMBP_print_header(ereg_replace(".*/","",$_SERVER['SCRIPT_NAME']));
+
+PMBP_print_header(preg_replace('@.*/@',"",$_SERVER['SCRIPT_NAME']));
 
 // used variables
 if (!isset($_GET['import']))    $_GET['import']=FALSE;

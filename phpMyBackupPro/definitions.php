@@ -62,8 +62,8 @@ $CONF['sql_passwd_s']=array();
 $CONF['sql_db_s']=array();
 
 // change path when in shell mode
-if(isset($argv) && basename($GLOBALS['_SERVER']['SCRIPT_FILENAME'])=="backup.php") {
-	$prepath=dirname($GLOBALS['_SERVER']['SCRIPT_FILENAME'])."/";
+if(isset($argv) && basename($_SERVER['SCRIPT_FILENAME'])=="backup.php") {
+	$prepath=dirname($_SERVER['SCRIPT_FILENAME'])."/";
 	//return;	
 } else {
 	$prepath="";

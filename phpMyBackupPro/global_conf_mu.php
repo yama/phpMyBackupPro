@@ -50,5 +50,3 @@ $PMBP_MU_CONF['allow_dir_backup']=true;
 // set server name
 // leave it blank to let the users set it by their own
 $PMBP_MU_CONF['sitename']="";
-
-?>

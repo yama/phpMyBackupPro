@@ -15,5 +15,3 @@ $CONF['sql_passwd_s'][]="your password";
 $CONF['sql_db_s'][]="use only this db";
 
 */
-
-?>

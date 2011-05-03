@@ -69,6 +69,10 @@ if(isset($argv) && basename($_SERVER['SCRIPT_FILENAME'])=="backup.php") {
 	$prepath="";
 }
 
+if (function_exists('date_default_timezone_set')) {
+date_default_timezone_set('Asia/Tokyo');
+}
+
 // include functions.inc
 require_once($prepath.PMBP_MAIN_INC);
 

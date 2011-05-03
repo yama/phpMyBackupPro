@@ -182,15 +182,15 @@ if (!$_SESSION['multi_user_mode']) {
 }
 
 // print html code
-if (isset($_GET['ext'])) echo "<br><form action=\"config.php?ext=TRUE\" method=\"post\">\n";
-    elseif(isset($_GET['sys'])) echo "<br><form action=\"config.php?sys=TRUE\" method=\"post\">\n";
-        else echo "<br><form action=\"config.php\" method=\"post\">\n";
-echo "<table border=\"0\" cellspacing=\"2\" cellpadding=\"1\" width=\"100%\">\n";
+if (isset($_GET['ext'])) echo "<br /><form action=\"config.php?ext=TRUE\" method=\"post\">\n";
+    elseif(isset($_GET['sys'])) echo "<br /><form action=\"config.php?sys=TRUE\" method=\"post\">\n";
+        else echo '<br /><form action="config.php" method="post">' . "\n";
+echo '<table border="0" cellspacing="2" cellpadding="1" width="100%">' . "\n";
 
 if ($_SESSION['multi_user_mode']) {
     // configurations in mu user mode
     echo "<tr>";
-    echo "<td colspan=\"8\">&nbsp;</td></tr><tr>";
+    echo '<td colspan="8">&nbsp;</td></tr><tr>';
     echo "<td>".C_LANG."*:</td><td>".PMBP_config_print("lang")."</td>\n";
     echo "<td>".C_DATE."*:</td><td>".PMBP_config_print("date")."</td>\n";      
     echo "<td>".C_STYLESHEET."*:</td><td>".PMBP_config_print("stylesheet")."</td>\n";      
@@ -201,10 +201,10 @@ if ($_SESSION['multi_user_mode']) {
     }    
     echo "</tr><tr>";  
     if ($PMBP_MU_CONF['allow_email']) {
-        echo "<td><br><div class=\"bold_left\">".C_TITLE_DELETE."</div></td><td colspan=\"3\"><br><hr></td>\n";    
-        echo "<td><br><div class=\"bold_left\">".C_TITLE_EMAIL."</div></td><td colspan=\"3\"><br><hr></td>\n";        
+        echo "<td><br /><div class=\"bold_left\">".C_TITLE_DELETE."</div></td><td colspan=\"3\"><br /><hr></td>\n";    
+        echo "<td><br /><div class=\"bold_left\">".C_TITLE_EMAIL."</div></td><td colspan=\"3\"><br /><hr></td>\n";        
     } else {
-        echo "<td><br><div class=\"bold_left\">".C_TITLE_DELETE."</div></td><td colspan=\"7\"><br><hr></td>\n";
+        echo "<td><br /><div class=\"bold_left\">".C_TITLE_DELETE."</div></td><td colspan=\"7\"><br /><hr></td>\n";
     }
     echo "</tr><tr>";
     echo "<td>".C_DEL_TIME.":</td><td>".PMBP_config_print("del_time")."</td>\n";
@@ -218,7 +218,7 @@ if ($_SESSION['multi_user_mode']) {
     }
     echo "</tr><tr>";
     if ($PMBP_MU_CONF['allow_ftp'] || $PMBP_MU_CONF['allow_dir_backup']) {
-        echo "<td><br><div class=\"bold_left\">".C_TITLE_FTP."</div></td><td colspan=\"7\"><br><hr></td>\n";
+        echo "<td><br /><div class=\"bold_left\">".C_TITLE_FTP."</div></td><td colspan=\"7\"><br /><hr></td>\n";
         echo "</tr><tr>";
         if ($PMBP_MU_CONF['allow_ftp']) {
             echo "<td>".C_FTP_USE.":</td><td>".PMBP_config_print("ftp_use")."</td>\n";
@@ -235,7 +235,7 @@ if ($_SESSION['multi_user_mode']) {
         echo "<td>".C_FTP_DEL.":</td><td>".PMBP_config_print("ftp_del")."</td>\n";
         echo "</tr><tr>";
     }
-    echo "<td><br><div class=\"bold_left\">".C_TITLE_CONFIG."</div></td><td colspan=\"7\"><br><hr></td>\n";
+    echo "<td><br /><div class=\"bold_left\">".C_TITLE_CONFIG."</div></td><td colspan=\"7\"><br /><hr></td>\n";
     echo "</tr><tr>";
     echo "<td>".C_TIMELIMIT." (".F_SECONDS.")*:</td><td>".PMBP_config_print("timelimit")."</td>\n";
     echo "<td>".C_CONFIRM."*:</td><td>".PMBP_config_print("confirm")."</td>\n";
@@ -249,21 +249,21 @@ if ($_SESSION['multi_user_mode']) {
     echo "</tr>";
 } elseif (isset($_GET['ext'])) {
     echo "<tr>";
-    echo "<td><br><div class=\"bold_left\">".C_TITLE_STYLE."</div></td><td colspan=\"7\"><br><hr></td>\n";
+    echo "<td><br /><div class=\"bold_left\">".C_TITLE_STYLE."</div></td><td colspan=\"7\"><br /><hr></td>\n";
     echo "</tr><tr>";
     echo "<td>".C_STYLESHEET."*:</td><td>".PMBP_config_print("stylesheet")."</td>\n";
     echo "<td>".C_DATE."*:</td><td>".PMBP_config_print("date")."</td>\n";
     echo "<td>".C_LOGIN."*:</td><td>".PMBP_config_print("login")."</td>\n";
     echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
     echo "</tr><tr>";
-    echo "<td><br><div class=\"bold_left\">".C_TITLE_DELETE."</div></td><td colspan=\"7\"><br><hr></td>\n";
+    echo "<td><br /><div class=\"bold_left\">".C_TITLE_DELETE."</div></td><td colspan=\"7\"><br /><hr></td>\n";
     echo "</tr><tr>";
     echo "<td>".C_DEL_TIME.":</td><td>".PMBP_config_print("del_time")."</td>\n";
     echo "<td>".C_DEL_NUMBER.":</td><td>".PMBP_config_print("del_number")."</td>\n";
     echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
     echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
     echo "</tr><tr>";
-    echo "<td><br><div class=\"bold_left\">".C_TITLE_CONFIG."</div></td><td colspan=\"7\"><br><hr></td>\n";
+    echo "<td><br /><div class=\"bold_left\">".C_TITLE_CONFIG."</div></td><td colspan=\"7\"><br /><hr></td>\n";
     echo "</tr><tr>";
     echo "<td>".C_TIMELIMIT." (".F_SECONDS.")*:</td><td>".PMBP_config_print("timelimit")."</td>\n";
     echo "<td>".C_CONFIRM."*:</td><td>".PMBP_config_print("confirm")."</td>\n";
@@ -276,7 +276,7 @@ if ($_SESSION['multi_user_mode']) {
     echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
     echo "</tr>";
 } elseif(isset($_GET['sys'])) {
-    echo "<div class=\"red\">".PMBP_C_SYS_WARNING."</div><br>";
+    echo "<div class=\"red\">".PMBP_C_SYS_WARNING."</div><br />";
     $i=0;
     foreach($PMBP_SYS_VAR as $key=>$value) {            
         if ($i%2==0) echo "<tr>\n";
@@ -293,14 +293,14 @@ if ($_SESSION['multi_user_mode']) {
     echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
     echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
     echo "</tr><tr>";
-    echo "<td><br><div class=\"bold_left\">".C_TITLE_SQL."</div></td><td colspan=\"7\"><br><hr></td>\n";
+    echo "<td><br /><div class=\"bold_left\">".C_TITLE_SQL."</div></td><td colspan=\"7\"><br /><hr></td>\n";
     echo "</tr><tr>";
     echo "<td>".C_SQL_HOST."*:</td><td>".PMBP_config_print("sql_host")."</td>\n";
     echo "<td>".C_SQL_USER."*:</td><td>".PMBP_config_print("sql_user")."</td>\n";
     echo "<td>".C_SQL_PASSWD."*:</td><td>".PMBP_config_print("sql_passwd")."</td>\n";
     echo "<td>".C_SQL_DB.":</td><td>".PMBP_config_print("sql_db")."</td>\n";
     echo "</tr><tr>";
-    echo "<td><br><div class=\"bold_left\">".C_TITLE_FTP."</div></td><td colspan=\"7\"><br><hr></td>\n";
+    echo "<td><br /><div class=\"bold_left\">".C_TITLE_FTP."</div></td><td colspan=\"7\"><br /><hr></td>\n";
     echo "</tr><tr>";
     echo "<td>".C_FTP_USE.":</td><td>".PMBP_config_print("ftp_use")."</td>\n";
     echo "<td>".C_FTP_SERVER.":</td><td>".PMBP_config_print("ftp_server")."</td>\n";
@@ -312,7 +312,7 @@ if ($_SESSION['multi_user_mode']) {
     echo "<td>".C_FTP_PORT.":</td><td>".PMBP_config_print("ftp_port")."</td>\n";
     echo "<td>".C_FTP_DEL.":</td><td>".PMBP_config_print("ftp_del")."</td>\n";
     echo "</tr><tr>";
-    echo "<td><br><div class=\"bold_left\">".C_TITLE_EMAIL."</div></td><td colspan=\"7\"><br><hr></td>\n";
+    echo "<td><br /><div class=\"bold_left\">".C_TITLE_EMAIL."</div></td><td colspan=\"7\"><br /><hr></td>\n";
     echo "</tr><tr>";
     echo "<td>".C_EMAIL_USE.":</td><td>".PMBP_config_print("email_use")."</td>\n";
     echo "<td>".C_EMAIL.":</td><td>".PMBP_config_print("email")."</td>\n";
@@ -367,7 +367,7 @@ function PMBP_config_print($item) {
             if ($file==$CONF[$item]) $out.="<option value=\"".$file."\" selected>".$file."</option>\n"; else $out.="<option value=\"".$file."\">".$file."</option>\n";
         $out.="</select>";
     } else {
-        $out="<input type=\"text\" size=\"10\" name=\"".$item."\" value=\"".$CONF[$item]."\"".PMBP_config_disable($item)."><br>";
+        $out="<input type=\"text\" size=\"10\" name=\"".$item."\" value=\"".$CONF[$item]."\"".PMBP_config_disable($item)."><br />";
     }
     return $out;
 }

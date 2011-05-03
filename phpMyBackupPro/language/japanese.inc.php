@@ -37,13 +37,13 @@ define('BD_CHARSET_HTML',"UTF-8"); // the charset used in you language for html
 define('BD_CHARSET_EMAIL',"ISO-2022-JP"); // the charset used in your langauge for MIME-emails
 
 /*functions.inc.php*/
-define('F_START',"開始する");
+define('F_START',"ダッシュボード");
 define('F_CONFIG',"設定");
 define('F_IMPORT',"リストア");
 define('F_BACKUP',"バックアップ");
 define('F_SCHEDULE',"スケジュールバックアップ");
 define('F_DB_INFO',"データベース情報");
-define('F_SQL_QUERY',"SQL 問合せ");
+define('F_SQL_QUERY',"SQL操作");
 define('F_HELP',"ヘルプ");
 define('F_LOGOUT',"ログアウト");
 define('F_FOOTER',"新規リリースとニュースを取得するために %sphpMyBackupPro プロジェクトのサイト%s へ訪問します。");
@@ -92,7 +92,7 @@ define('PMBP_I_SERVER',"サーバー");
 define('PMBP_I_TIME',"時間");
 define('PMBP_I_PHP_VERS',"PHP バージョン");
 define('PMBP_I_MEM_LIMIT',"PHP メモリ制限");
-define('PMBP_I_SAFE_MODE',"セーフモード有効");
+define('PMBP_I_SAFE_MODE',"セーフモード");
 define('PMBP_I_FTP',"FTP 転送可能");
 define('PMBP_I_MAIL',"メール添付で送信可能");
 define('PMBP_I_GZIP',"gzip 圧縮可能");
@@ -120,7 +120,7 @@ define('C_FTP_PATH',"FTP パス");
 define('C_FTP_PASV',"FTP Passive を使いますか?");
 define('C_FTP_PORT',"FTP ポート");
 define('C_FTP_DEL',"FTP サーバーのファイルを削除する");
-define('C_EMAIL_USE',"メールを使用しますか?");
+define('C_EMAIL_USE',"メール添付機能を使用する");
 define('C_EMAIL',"メールアドレス");
 define('C_STYLESHEET',"スキン");
 define('C_DATE',"日付のスタイル");
@@ -204,8 +204,8 @@ define('PMBP_EX_NO_ARGV',"使用例:\n$ php backup.php db1,db2,db3
 更なる機能はディレクトリ「documentation」の「SHELL_MODE.txt」を読んでください。");
 
 /*scheduled.php*/
-define('EXS_PERIOD',"バックアップ期間を選択する");
-define('EXS_PATH',"Select directory where the php file will be placed");
+define('EXS_PERIOD',"バックアップの間隔を選択する");
+define('EXS_PATH',"トリガーを記述するPHPファイルが存在するディレクトリを選択");
 define('EXS_BACK',"戻る");
 define('PMBP_EXS_ALWAYS',"At each call");
 define('EXS_HOUR',"hour");
@@ -215,7 +215,7 @@ define('EXS_DAYS',"days");
 define('EXS_WEEK',"week");
 define('EXS_WEEKS',"weeks");
 define('EXS_MONTH',"month");
-define('EXS_SHOW',"スクリプトを表示する");
+define('EXS_SHOW',"トリガースクリプトを表示する");
 define('PMBP_EXS_INCL',"バックアップを行いたいphpファイルにこのスクリプトを挿入して下さい(%s)");
 define('PMBP_EXS_SAVE',"or save this script to a new file (will overwrite an existing file!)");
 

@@ -92,7 +92,7 @@ if ($_GET['import'] || $_GET['imp_ALL'])
 			$db=@mysql_select_db($dbname=PMBP_file_info("db","./".PMBP_EXPORT_DIR.$import_file));
 			if (!$db)
 			{
-				printf(".<div class=\"red\">".PMBP_EX_NO_AVAILABLE."</div>\n",$dbname);
+				printf('.<div class="red">' . PMBP_EX_NO_AVAILABLE . "</div>\n",$dbname);
 			}
 			else
 			{
@@ -120,11 +120,11 @@ if ($_GET['import'] || $_GET['imp_ALL'])
 				// echo success
 				if ($error)
 				{
-					echo "<div class=\"red_left\">".$import_file.": ".$error."</div>\n";
+					echo '<div class="red_left">' . $import_file . ': ' . $error . "</div>\n";
 				}
 				else
 				{
-					echo "<div class=\"green\">".IM_SUCCESS." ".$insertQueries." ".IM_TABLES." ".$tableQueries." ".IM_ROWS." (".$import_file.")</div>";
+					echo '<div class="green">' . IM_SUCCESS . ' ' . $insertQueries . ' ' . IM_TABLES . ' ' . $tableQueries . " ".IM_ROWS." (".$import_file.")</div>";
 				}
 			}
 		}
@@ -139,7 +139,7 @@ if ($_GET['import'] || $_GET['imp_ALL'])
 	{
 		$endtime=time();
 	}
-	echo "<div class=\"bold\">".F_DURATION.": ".number_format($endtime-$starttime,3)." ".F_SECONDS."</div><br>\n";
+	echo '<div class="bold">' . F_DURATION . ": ".number_format($endtime-$starttime,3)." ".F_SECONDS."</div><br>\n";
 }
 
 // remove old backup files and get list of backup files
@@ -151,7 +151,7 @@ if ($_GET['del_ALL'])
 	$result=false;
 	if (is_array($all_files))
 	$result=PMBP_delete_backup_files($all_files);
-	if (!$result) echo "<div class=\"green\">".B_DELETED_ALL.".</div>\n";
+	if (!$result) echo '<div class="green">' . B_DELETED_ALL . ".</div>\n";
 	else          echo '<div class="red">' . $result."</div>\n";
 }
 
@@ -172,7 +172,7 @@ if ($_GET['empty_ALL'])
 	}
 	$error=mysql_error();
 	if ($error) echo $error;
-	else echo "<div class=\"green\">".B_EMPTIED_ALL.".</div>\n";
+	else echo '<div class="green">' . B_EMPTIED_ALL . ".</div>\n";
 }
 
 // empty db if the link was clicked
@@ -181,7 +181,7 @@ if ($_GET['empty_all'])
 	$db=mysql_select_db($_GET['empty_all']);
 	if (!$db)
 	{
-		printf(".<div class=\"red\">".PMBP_EX_NO_AVAILABLE."</div>\n",$_GET['empty_all']);
+		printf('.<div class="red">' . PMBP_EX_NO_AVAILABLE . "</div>\n",$_GET['empty_all']);
 	}
 	else
 	{
@@ -194,7 +194,7 @@ if ($_GET['empty_all'])
 		}
 		$error=mysql_error();
 		if ($error) echo $error;
-		else echo "<div class=\"green\">".B_EMPTIED.".</div>\n";
+		else echo '<div class="green">' . B_EMPTIED . ".</div>\n";
 	}
 }
 
@@ -242,10 +242,10 @@ if (is_array($all_files))
 		if (!isset($printed_title[$db=PMBP_file_info("db",$file)]))
 		{
 			$printed_title[$db]=TRUE;
-			echo "<tr><th colspan=\"9\" class=\"active\">".$db." <span class=\"standard\">".PMBP_confirm(B_CONF_EMPTY_DB,"import.php?empty_all=".$db,"[".B_EMPTY_DB."]");
+			echo '<tr><th colspan="9" class="active">' . $db . ' <span class="standard">' . PMBP_confirm(B_CONF_EMPTY_DB,"import.php?empty_all=".$db,"[".B_EMPTY_DB."]");
 			echo "&nbsp;".PMBP_confirm(B_CONF_DEL_ALL,"import.php?del_all=".$db,"[".B_DELETE_ALL."]")."</span></th></tr>\n";
 		}
-		echo "<tr ".PMBP_change_color("#FFFFFF","#000000").">\n<td class=\"list\">\n".$filename."</td>\n";
+		echo "<tr>\n<td class=\"list\">\n".$filename."</td>\n";
 		echo '<td class="list">' . strftime($CONF['date'],$time=PMBP_file_info("time",$file))."</td>\n";
 		if ($time>$last_backup) $last_backup=$time;
 		$size_sum+=$size=PMBP_file_info("size",$file);

@@ -39,11 +39,11 @@ function PMBP_print_header($scriptname) {
     global $PMBP_MU_CONF;
     
     if (!isset($CONF['stylesheet'])) $CONF['stylesheet']="standard";
-    echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01
-Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-<html".ARABIC_HTML.">
+    
+    echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"' . ARABIC_HTML . '>
 <head>
-<title>phpMyBackupPro ".PMBP_VERSION;
+<title>phpMyBackupPro ' . PMBP_VERSION;
     // print mu mode info in browser title
     if ($_SESSION['multi_user_mode']) echo " (Multi User Mode)";
     if (isset($_SESSION['sql_user']) && isset($_SESSION['sql_passwd']))
@@ -53,19 +53,20 @@ Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
 	if (!file_exists(PMBP_STYLESHEET_DIR.$CONF['stylesheet'].".css"))
 		if (!file_exists(PMBP_STYLESHEET_DIR.($CONF['stylesheet']="standard")."css"))
 			echo "STYLESHEET IS MISSING!";
-    echo "</title>
-<meta http-equiv=\"Content-Type\" content=\"text/html;charset=".BD_CHARSET_HTML."\">
-<meta name=\"robots\" content=\"noindex\">
-<meta name=\"robots\" content=\"nofollow\">
-<link href=\"images/favicon.png\" type=\"image/png\" rel=\"icon\">
-<link rel=\"stylesheet\" href=\"".PMBP_STYLESHEET_DIR.$CONF['stylesheet'].".css\" type=\"text/css\">
-";
+    echo '</title>
+<meta http-equiv="Content-Type" content="text/html;charset=' . BD_CHARSET_HTML . '">
+<meta name="robots" content="noindex">
+<meta name="robots" content="nofollow">
+<link href="images/favicon.png" type="image/png" rel="icon">
+<link rel="stylesheet" href="' . PMBP_STYLESHEET_DIR . $CONF['stylesheet'] . '.css" type="text/css">
+';
     readfile(PMBP_JAVASCRIPTS);
     // define menue
     $menu=array("index.php"=>F_START,"config.php"=>F_CONFIG,"import.php"=>F_IMPORT,"backup.php"=>F_BACKUP,"scheduled.php"=>F_SCHEDULE,"db_info.php"=>F_DB_INFO);
     
     // disable sql queries in mu mode if allow_sql_queries is false
-    if (($_SESSION['multi_user_mode'] && $PMBP_MU_CONF['allow_sql_queries']) || !$_SESSION['multi_user_mode']) {
+    if (($_SESSION['multi_user_mode'] && $PMBP_MU_CONF['allow_sql_queries']) || !$_SESSION['multi_user_mode'])
+    {
         $menu=array_merge($menu, array("sql_query.php"=>F_SQL_QUERY));
     }
         
@@ -73,28 +74,32 @@ Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
     $simple_width=140;
     $width=count($menu)*$simple_width;
     
-    echo "</head>
-
+    echo '<style type="text/css">
+    div.wrap {width:' . $width . 'px;}
+    </style>
+    </head>
 <body>
-<table width=\"".$width."\">
+<div class="wrap">
+<table class="header">
  <colgroup>
-  <col span=\"".count($menu)."\" width=\"".$simple_width."\">
+  <col span="' . count($menu) . '" width="' . $simple_width . '">
  </colgroup>
  <tr>
-  <th colspan=\"".count($menu)."\" class=\"active\" id=\"menu\">\n";
+  <th colspan="' . count($menu) . '" class="active" id="menu">' . "\n";
   // print titel
-  echo "<div id=\"logo\">\n";
-  echo PMBP_image_tag("logo.png","phpMyBackupPro","phpMyBackupPro Homepage",PMBP_WEBSITE);
-  echo "&nbsp;&nbsp;".PMBP_VERSION."\n";
-  echo "</div>\n<div id=\"help\">\n";
+  echo '<div id="logo">' . "\n";
+  echo PMBP_image_tag("logo.png", "phpMyBackupPro", "phpMyBackupPro Homepage", PMBP_WEBSITE);
+  echo "&nbsp;&nbsp;" . PMBP_VERSION . "\n";
+  echo '</div>' . "\n" . '<div id="help">' . "\n";
     // generate popup link for proper help file
     if (!file_exists("./".PMBP_LANGUAGE_DIR.$CONF['lang']."_help.php")) echo PMBP_pop_up("./".PMBP_LANGUAGE_DIR."english_help.php?script=".$scriptname,PMBP_image_tag("help.gif","","help").F_HELP,"help","help");
         else echo  PMBP_pop_up("./".PMBP_LANGUAGE_DIR.$CONF['lang']."_help.php?script=".$scriptname,PMBP_image_tag("help.gif","","help").F_HELP,"help","help");
 
-    echo "\n</div>\n<div id=\"logout\">\n";
+    echo "\n</div>\n" . '<div id="logout">' . "\n";
     // print logout link if function is not disabled
-    if (!($CONF['no_login']=="1" && $CONF['login']=="0")) {
-        echo "<a href=\"login.php?logout=TRUE\" accesskey=\"l\" title=\"[access key = l]\">";
+    if (!($CONF['no_login']=="1" && $CONF['login']=="0"))
+    {
+        echo '<a href="login.php?logout=TRUE" accesskey="l" title="[access key = l]">';
         echo PMBP_image_tag("login.gif","","[access key = l]");
         echo F_LOGOUT."</a>\n";
     }
@@ -102,61 +107,70 @@ Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
     echo "  </th>\n";
 
 // print selection for several sql servers
-if (count($CONF['sql_passwd_s']) && basename($_SERVER['SCRIPT_NAME'])!=="config.php" && !isset($_POST['period'])) {
-    echo " </tr>
+if (count($CONF['sql_passwd_s']) && basename($_SERVER['SCRIPT_NAME'])!=="config.php" && !isset($_POST['period']))
+{
+    echo ' </tr>
  <tr>
-  <th colspan=\"".count($menu)."\">
-  <form action=\"".basename($_SERVER['SCRIPT_NAME'])."\" method=\"POST\">
-  <span class=\"bold_left\">Select working SQL server:</span>
-  <select name=\"mysql_host\" onchange=\"submit()\">\n";
-    if ($CONF['sql_host']==$_SESSION['sql_host_org'] && $CONF['sql_user']==$_SESSION['sql_user_org']) echo "<option value=\"-1\" selected>".$_SESSION['sql_host_org']." (".$_SESSION['sql_user_org'].")</option>\n";
-        else echo "<option value=\"-1\">".$_SESSION['sql_host_org']." (".$_SESSION['sql_user_org'].")</option>\n";
-    for($i=0;$i<count($CONF['sql_passwd_s']);$i++) {
-
-        if (isset($CONF['sql_host_s'])) {
-            if ($CONF['sql_host']==$CONF['sql_host_s'][$i] && $CONF['sql_user']==$CONF['sql_user_s'][$i]) echo "<option value=\"".$i."\" selected>".$CONF['sql_host_s'][$i]." (".$CONF['sql_user_s'][$i].")</option>\n";
-                else echo "<option value=\"".$i."\">".$CONF['sql_host_s'][$i]." (".$CONF['sql_user_s'][$i].")</option>\n";
-        } else {
-            echo "<option value=\"".$i."\">".$CONF['sql_host_s'][$i]." (".$CONF['sql_user_s'][$i].")</option>\n";
+  <th colspan="' . count($menu) . '">
+  <form action="' . basename($_SERVER['SCRIPT_NAME']) . '" method="POST">
+  <span class="bold_left">Select working SQL server:</span>
+  <select name="mysql_host" onchange="submit()">' . "\n";
+    if ($CONF['sql_host']==$_SESSION['sql_host_org'] && $CONF['sql_user']==$_SESSION['sql_user_org'])
+         echo '<option value="-1" selected>' . $_SESSION['sql_host_org'] . ' (' . $_SESSION['sql_user_org'] . ")</option>\n";
+    else echo '<option value="-1">'          . $_SESSION['sql_host_org'] . ' (' . $_SESSION['sql_user_org'] . ")</option>\n";
+    for($i=0;$i<count($CONF['sql_passwd_s']);$i++)
+    {
+        if (isset($CONF['sql_host_s']))
+        {
+            if ($CONF['sql_host']==$CONF['sql_host_s'][$i] && $CONF['sql_user']==$CONF['sql_user_s'][$i])
+                 echo '<option value="' . $i.'" selected>' . $CONF['sql_host_s'][$i] . " (".$CONF['sql_user_s'][$i].")</option>\n";
+            else echo '<option value="' . $i.'">'          . $CONF['sql_host_s'][$i] . " (".$CONF['sql_user_s'][$i].")</option>\n";
+        }
+        else
+        {
+                 echo '<option value="' . $i . '">'        . $CONF['sql_host_s'][$i] . " (".$CONF['sql_user_s'][$i].")</option>\n";
         }
     }
     echo "  </select></form>
   </th>\n";
 }
 
-echo " </tr>
+echo ' </tr>
  <!-- MENU -->
- <tr>\n";
+ <tr class="gnavi">' . "\n";
 
     // generate menu
-    foreach($menu as $filename=>$title) {
-
+    foreach($menu as $filename=>$title)
+    {
         // print active link
-        if ($filename==$scriptname && $filename!="login.php?logout=TRUE" && $filename!="HELP") {
-            echo "  <th class=\"active\">\n   <a href=\"".$filename."\" accesskey=\"".$accesskeys[$filename]."\" title=\"[access key = ".$accesskeys[$filename]."]\">".PMBP_image_tag(substr($filename,0,strpos($filename,".")).".gif","","[accesskey = ".$accesskeys[$filename]."]").$title."</a>\n  </th>\n";
+        if($filename==$scriptname && $filename!="login.php?logout=TRUE" && $filename!="HELP")
+        {
+            echo '  <th class="active">' . "\n" . '   <a href="' . $filename . '" accesskey="' . $accesskeys[$filename] . '" title="[access key = ' . $accesskeys[$filename] . ']">' . PMBP_image_tag(substr($filename,0,strpos($filename,'.')) . '.gif', '', '[accesskey = ' . $accesskeys[$filename] . ']') . $title . "</a>\n  </th>\n";
 
         // print lasting menu
-        } elseif ($filename!="login.php?logout=TRUE" && $filename!="HELP") {
-            echo "  <th>\n   <a href=\"".$filename."\" accesskey=\"".$accesskeys[$filename]."\" title=\"[access key = ".$accesskeys[$filename]."]\">".PMBP_image_tag(substr($filename,0,strpos($filename,".")).".gif","","[accesskey = ".$accesskeys[$filename]."]").$title."</a>\n  </th>\n";
+        }
+        elseif($filename!='login.php?logout=TRUE' && $filename!='HELP')
+        {
+            echo "  <th>\n" . '   <a href="' . $filename . '" accesskey="' . $accesskeys[$filename] . '" title="[access key = ' . $accesskeys[$filename] . ']">' . PMBP_image_tag(substr($filename,0,strpos($filename, '.')) . '.gif', '', '[accesskey = ' . $accesskeys[$filename] . ']') . $title . "</a>\n  </th>\n";
         }
         
     }
 
-    echo " </tr>
+    echo ' </tr>
 </table>
-<table width=\"".$width."\" class=\"maintable\">
+<table style="width:100%;" class="maintable">
  <colgroup>
-  <col width=\"20\">
-  <col width=\"*\">
-  <col width=\"20\">
+  <col width="20">
+  <col width="*">
+  <col width="20">
  </colgroup>
  <tr>
   <td>
     &nbsp;
   </td>
-  <td class=\"main\">
+  <td class="main">
 <!-- HEADER END -->
-";
+';
 }
 
 
@@ -172,17 +186,19 @@ function PMBP_print_footer() {
         $tabe_width=840;
     }
     
-    echo "\n<!-- FOOTER -->
+    echo '
+    <!-- FOOTER -->
   </td>
   <td>
     &nbsp;
   </td>
  </tr>
 </table>
-<table width=\"".$tabe_width."\">
+<table width="' . $tabe_width . '">
  <tr>
-  <th class=\"active\">\n";
-   printf(F_FOOTER,"<a href=\"".PMBP_WEBSITE."\">","</a>");
+  <th class="active">
+  ';
+   printf(F_FOOTER,'<a href="' . PMBP_WEBSITE . '">', '</a>');
    echo "\n</th>\n </tr>\n";
 
     // check for updates
@@ -212,11 +228,12 @@ function PMBP_print_footer() {
     
         // new version found, print hint
         if ($_SESSION['PMBP_VERSION']) {
-            echo "\n <tr>
-      <td class=\"red\">
-        ";
-            printf(F_NOW_AVAILABLE,"<a href=\"".PMBP_WEBSITE."\">","</a>");
-            echo " !!!<br><br>
+            echo '
+<tr>
+      <td class="red">
+        ';
+            printf(F_NOW_AVAILABLE, '<a href="' . PMBP_WEBSITE . '">', '</a>');
+            echo " !<br /><br />
       </td>
      </tr>\n";
         }
@@ -252,6 +269,7 @@ function PMBP_print_footer() {
 
 echo "
 </table>
+</div>
 </body>
 </html>
 ";
@@ -287,10 +305,10 @@ function PMBP_print_export_form($dirs1=FALSE) {
     } else {
         echo "<option></option>\n";
     }
-    echo "</select>\n<br>";
+    echo "</select>\n<br />";
     echo PMBP_set_select("backup","db[]","[".F_SELECT_ALL."]");
     echo "\n</td>\n<td>&nbsp;</td>\n<td>\n";
-    echo "<textarea name=\"comments\" rows=\"9\" cols=\"80\">".$PMBP_SYS_VAR['F_comment']."</textarea>\n<br>";
+    echo "<textarea name=\"comments\" rows=\"9\" cols=\"80\">".$PMBP_SYS_VAR['F_comment']."</textarea>\n<br />";
     if($PMBP_SYS_VAR['F_tables']) $checked="checked"; else $checked="";
     echo "<input type=\"checkbox\" name=\"tables\" ".$checked.">".F_EX_TABLES." | ";
     if($PMBP_SYS_VAR['F_data']) $checked="checked"; else $checked="";    
@@ -318,9 +336,9 @@ function PMBP_print_export_form($dirs1=FALSE) {
 
         echo "\n\n<table width=\"940\">\n";
         echo "<tr>\n<td>\n";
-        echo EX_DIRS.":<br>(<a href=\"scheduled.php?update_dir_list=TRUE\">".PMBP_EXS_UPDATE_DIRS."</a>)<br>\n";
+        echo EX_DIRS.":<br />(<a href=\"scheduled.php?update_dir_list=TRUE\">".PMBP_EXS_UPDATE_DIRS."</a>)<br />\n";
         echo "</td>\n<td>&nbsp;</td>\n<td>\n";
-        echo EX_DIRS_MAN.":<br>\n";
+        echo EX_DIRS_MAN.":<br />\n";
         echo "</td>\n</tr><tr>\n<td>";
         echo "<select name='dirs[]' multiple=\"multiple\" size=\"9\">";
         foreach($dirs1 as $value) {
@@ -332,7 +350,7 @@ function PMBP_print_export_form($dirs1=FALSE) {
         }
         echo "</select>\n";
         echo "\n</td>\n<td>&nbsp;</td>\n<td>\n";
-        echo "<textarea rows=\"7\" cols=\"63\" name=\"man_dirs\">".$PMBP_SYS_VAR['F_ftp_dirs_2']."</textarea><br>\n";
+        echo "<textarea rows=\"7\" cols=\"63\" name=\"man_dirs\">".$PMBP_SYS_VAR['F_ftp_dirs_2']."</textarea><br />\n";
         if($PMBP_SYS_VAR['F_packed']) $checked="checked"; else $checked="";        
         echo "<input type=\"checkbox\" name=\"packed\" ".$checked."> Packed in one ZIP file\n";
         echo "</td>\n</tr>\n</table>\n<p></p>\n";
@@ -526,7 +544,7 @@ function PMBP_exec_sql($file,$con,$linespersession=false,$noFile=false) {
         // execute query if end of query detected (; as last character) AND NOT in parents
         if (preg_match('@;$@',trim($dumpline)) && !$inparents) {
             if (!mysql_query(trim($query),$con)) {
-                $error=SQ_ERROR." ".($linenumber+1)."<br>".nl2br(htmlentities(trim($query)))."\n<br>".htmlentities(mysql_error());
+                $error=SQ_ERROR." ".($linenumber+1)."<br />".nl2br(htmlentities(trim($query)))."\n<br />".htmlentities(mysql_error());
                 break;
             }
             
@@ -1217,7 +1235,7 @@ function PMBP_file_info($mode,$path) {
             while ($line=PMBP_getln($path)) {
                 $line=trim($line);
                 if (isset($comment) && substr($line,0,1)=="#") {
-                	$comment.=substr($line,2)."<br>";
+                	$comment.=substr($line,2)."<br />";
                 } elseif(isset($comment) && substr($line,0,1)!="#") {
                 	PMBP_getln($path,true);
                 	return $comment;
@@ -1270,7 +1288,7 @@ function PMBP_getln($path, $close=false, $org_path=false) {
 			        
 			        if ($pclzip->error_code!=0) {
 			        	// print pclzip error message
-				        echo "<div class=\"red\">pclzip: ".$pclzip->error_string."<br>".BI_BROKEN_ZIP."!</div>";
+				        echo "<div class=\"red\">pclzip: ".$pclzip->error_string."<br />".BI_BROKEN_ZIP."!</div>";
 				        return false;
 			        } else {
 						unset($pclzip);

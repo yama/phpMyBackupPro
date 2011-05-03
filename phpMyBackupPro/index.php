@@ -52,7 +52,7 @@ else
 	$php=PMBP_I_NO_RES;
 }
 if(!($memory_limit=@ini_get("memory_limit"))) $memory_limit=PMBP_I_NO_RES;
-if(@ini_get('safe_mode')=='1')                $safe_mode = F_YES;         else $safe_mode= '<span class="red_left">' . F_NO . '</span>';
+if(@ini_get('safe_mode')=='1')                $safe_mode = F_YES;         else $safe_mode= '<span class="green_left">' . F_NO . '</span>';
 if(function_exists('ftp_connect'))            $ftp       = F_YES;         else $ftp = '<span class="red_left">' . F_NO . '</span>';
 if(function_exists('mail'))                   $mail      = F_YES;         else $mail='<span class="red_left">' . F_NO . '</span>';
 if(function_exists('gzopen'))                 $gzip      = F_YES;         else $gzip = F_NO;
@@ -90,7 +90,7 @@ else                $scheduled_time = '-';
 
 // print system informations
 echo '<br /><br /><div class="bold_left">' . PMBP_I_INFO."</div>\n";
-echo "<table>\n<tr>\n";
+echo '<table class="grid">' . "\n<tr>\n";
 echo '<th colspan="5" class="active">' . PMBP_I_SERVER . '</th>';
 echo "</tr><tr>\n";
 echo '<td class="list" colspan="3">' . $server."</td>\n";

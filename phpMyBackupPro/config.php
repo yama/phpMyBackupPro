@@ -434,9 +434,11 @@ function PMBP_config_print($item)
 	{
 		$files = FALSE;
 		$handle=opendir('./' . $filelist[$item][0]);
-		while ($file=readdir($handle))
-		if(substr($file,-(strlen($filelist[$item][1])),strlen($filelist[$item][1]))==$filelist[$item][1])
-		$files[] = substr($file,0,strlen($file)-strlen($filelist[$item][1]));
+		while (($file = readdir($handle))!==false)
+		{
+			if(substr($file,-(strlen($filelist[$item][1])),strlen($filelist[$item][1]))==$filelist[$item][1])
+			$files[] = substr($file,0,strlen($file)-strlen($filelist[$item][1]));
+		}
 		$out='<select name="' . $item . "\">\n";
 		foreach($files as $file)
 		{

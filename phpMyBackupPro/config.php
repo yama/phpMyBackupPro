@@ -26,7 +26,15 @@
 require_once('login.php');
 
 // items which are checkboxes and the config page basic(1) or ext(2)
-$checkbox=array('ftp_use'=>1,'ftp_pasv'=>1,'email_use'=>1,'import_error'=>2,'no_login'=>2,'ftp_del'=>1,'dir_backup'=>2,'dir_rec'=>2,'login'=>2);
+$checkbox['ftp_use']      = 1;
+$checkbox['ftp_pasv']     = 1;
+$checkbox['email_use']    = 1;
+$checkbox['import_error'] = 2;
+$checkbox['no_login']     = 2;
+$checkbox['ftp_del']      = 1;
+$checkbox['dir_backup']   = 2;
+$checkbox['dir_rec']      = 2;
+$checkbox['login']        = 2;
 
 // check if all configuration settings are available
 // login, stylesheet and lang are checked before
@@ -62,10 +70,10 @@ if(isset($_POST['submit']))
 	if(isset($_POST['sql_host']) || isset($_POST['del_time']))
 	{
 		// first set all check boxes of the selected configuration tab to '0'
-		foreach ($checkbox as $item=>$page)
+		foreach ($checkbox as $item => $page)
 		{
-			if($page=='2' && isset($_GET['ext']))      $CONF[$item]='0'; // checkboxes on extended configurations
-			elseif($page=='1' && !isset($_GET['ext'])) $CONF[$item]='0'; // checkboxes on basic configurations
+			if($page=='2' && isset($_GET['ext']))      $CONF[$item] = '0'; // checkboxes on extended configurations
+			elseif($page=='1' && !isset($_GET['ext'])) $CONF[$item] = '0'; // checkboxes on basic configurations
 		}
 
 		// update $CONF
@@ -137,12 +145,19 @@ if(isset($_POST['submit']))
 	}
 }
 
-PMBP_print_header(preg_replace('@.*/@','',$_SERVER['SCRIPT_NAME']));
+PMBP_print_header(preg_replace('@.*/@', '', $_SERVER['SCRIPT_NAME']));
 if(isset($out)) echo $out;
 
 // validation type of some variables
-$validate=array('timelimit'=>'int','del_time'=>'float','email'=>'email','ftp_port'=>'int');
-$conf=array(C_TIMELIMIT=>'timelimit',C_FTP_PORT=>'ftp_port',C_DEL_TIME=>'del_time',C_EMAIL=>'email');
+$validate['timelimit'] = 'int';
+$validate['del_time']  = 'float';
+$validate['email']     = 'email';
+$validate['ftp_port']  = 'int';
+
+$conf[C_TIMELIMIT] = 'timelimit';
+$conf[C_DEL_TIME]  = 'del_time';
+$conf[C_EMAIL]     = 'email';
+$conf[C_FTP_PORT]  = 'ftp_port';
 
 // validate
 foreach($CONF as $key=>$value)
@@ -154,7 +169,11 @@ foreach($CONF as $key=>$value)
 			case 'int':
 				if(!preg_match('@^[0-9]+$@',$value)) echo '<div class="red">' . array_search($key,$conf) . "' " . C_WRONG_TYPE . "</div>\n";
 				break;
-			case 'float': if(!preg_match('@^(\\|\$)?(0|-?[1-9]\d*|-?(0|[1-9]\d*)\.\d+)$@',$value)) echo '<div class="red">\'' . array_search($key,$conf) . "' " . C_WRONG_TYPE . "</div>\n";
+			case 'float':
+				if(!preg_match('@^(\\|\$)?(0|-?[1-9]\d*|-?(0|[1-9]\d*)\.\d+)$@',$value))
+				{
+					echo '<div class="red">\'' . array_search($key,$conf) . "' " . C_WRONG_TYPE . "</div>\n";
+				}
 				break;
 			case 'email':
 				if($value||$CONF['email_use'])
@@ -181,8 +200,8 @@ if(isset($_SESSION['sql_host_org']))
 }
 else
 {
-	if(!@mysql_connect($CONF['sql_host'],$CONF['sql_user'],$CONF['sql_passwd'])) echo '<div class="red">'.C_WRONG_SQL.'</div>';
-	if($CONF['sql_db']) if(!@mysql_select_db($CONF['sql_db'])) echo '<div class="red">'.C_WRONG_DB.'</div>';
+	if(!@mysql_connect($CONF['sql_host'],$CONF['sql_user'],$CONF['sql_passwd'])) echo '<div class="red">' . C_WRONG_SQL.'</div>';
+	if($CONF['sql_db']) if(!@mysql_select_db($CONF['sql_db'])) echo '<div class="red">' . C_WRONG_DB.'</div>';
 }
 
 // only if 'good internet connection' and if no ftp connection possible
@@ -190,13 +209,13 @@ if($CONF['ftp_use'] || $CONF['dir_backup'])
 {
 	if(!$CONF['ftp_server'])
 	{
-		echo '<div class="red">'.C_WRONG_FTP.'</div>';
+		echo '<div class="red">' . C_WRONG_FTP.'</div>';
 		// check only if internet connection seems to be good
 	}
 	elseif(!$_SESSION['PMBP_VERSION'])
 	{
 		if(!$conn_id=@ftp_connect($CONF['ftp_server'],$CONF['ftp_port'],$PMBP_SYS_VAR['ftp_timeout']))
-		echo '<div class="red">'.C_WRONG_FTP . '</div>';
+		echo '<div class="red">' . C_WRONG_FTP . '</div>';
 	}
 }
 
@@ -209,11 +228,11 @@ if(!$_SESSION['multi_user_mode'])
 	}
 	elseif(isset($_GET['sys']))
 	{
-		echo '<div class="bold"><a href="config.php">' . C_BASIC_VAL . '</a> | <a href="config.php?ext=TRUE">' . C_EXT_VAL . "</a> | ".PMBP_C_SYSTEM_VAL."</div>\n";
+		echo '<div class="bold"><a href="config.php">' . C_BASIC_VAL . '</a> | <a href="config.php?ext=TRUE">' . C_EXT_VAL . "</a> | ". PMBP_C_SYSTEM_VAL."</div>\n";
 	}
 	else
 	{
-		echo '<div class="bold">' . C_BASIC_VAL . ' | <a href="config.php?ext=TRUE">' . C_EXT_VAL . "</a> | <a href=\"config.php?sys=TRUE\">".PMBP_C_SYSTEM_VAL."</a></div>\n";
+		echo '<div class="bold">' . C_BASIC_VAL . ' | <a href="config.php?ext=TRUE">' . C_EXT_VAL . "</a> | <a href=\"config.php?sys=TRUE\">". PMBP_C_SYSTEM_VAL."</a></div>\n";
 	}
 }
 
@@ -247,15 +266,15 @@ if($_SESSION['multi_user_mode'])
 	}
 	else
 	{
-		echo '<td><br /><div class="bold_left">'.C_TITLE_DELETE."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
+		echo '<td><br /><div class="bold_left">' . C_TITLE_DELETE."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	}
 	echo '</tr><tr>';
-	echo '<td>' . C_DEL_TIME .   ':</td><td>' .PMBP_config_print('del_time')   . "</td>\n";
-	echo '<td>' . C_DEL_NUMBER . ':</td><td>' .PMBP_config_print('del_number') . "</td>\n";
+	echo '<td>' . C_DEL_TIME .   ':</td><td>' . PMBP_config_print('del_time')   . "</td>\n";
+	echo '<td>' . C_DEL_NUMBER . ':</td><td>' . PMBP_config_print('del_number') . "</td>\n";
 	if($PMBP_MU_CONF['allow_email'])
 	{
-		echo '<td>' . C_EMAIL_USE. ':</td><td>' .PMBP_config_print('email_use') . "</td>\n";
-		echo '<td>' . C_EMAIL. ':</td><td>' .PMBP_config_print('email')         . "</td>\n";
+		echo '<td>' . C_EMAIL_USE. ':</td><td>' . PMBP_config_print('email_use') . "</td>\n";
+		echo '<td>' . C_EMAIL. ':</td><td>' . PMBP_config_print('email')         . "</td>\n";
 	}
 	else
 	{
@@ -265,34 +284,34 @@ if($_SESSION['multi_user_mode'])
 	echo '</tr><tr>';
 	if($PMBP_MU_CONF['allow_ftp'] || $PMBP_MU_CONF['allow_dir_backup'])
 	{
-		echo '<td><br /><div class="bold_left">'.C_TITLE_FTP."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
+		echo '<td><br /><div class="bold_left">' . C_TITLE_FTP."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 		echo '</tr><tr>';
 		if($PMBP_MU_CONF['allow_ftp'])
 		{
-			echo '<td>' . C_FTP_USE. ':</td><td>' .PMBP_config_print('ftp_use') . "</td>\n";
+			echo '<td>' . C_FTP_USE. ':</td><td>' . PMBP_config_print('ftp_use') . "</td>\n";
 		}
 		else
 		{
 			echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 		}
-		echo '<td>' . C_FTP_SERVER . ':</td><td>' .PMBP_config_print('ftp_server') . "</td>\n";
-		echo '<td>' . C_FTP_USER   . ':</td><td>' .PMBP_config_print('ftp_user')   . "</td>\n";
-		echo '<td>' . C_FTP_PASSWD . ':</td><td>' .PMBP_config_print('ftp_passwd') . "</td>\n";
+		echo '<td>' . C_FTP_SERVER . ':</td><td>' . PMBP_config_print('ftp_server') . "</td>\n";
+		echo '<td>' . C_FTP_USER   . ':</td><td>' . PMBP_config_print('ftp_user')   . "</td>\n";
+		echo '<td>' . C_FTP_PASSWD . ':</td><td>' . PMBP_config_print('ftp_passwd') . "</td>\n";
 		echo '</tr><tr>';
-		echo '<td>' . C_FTP_PATH . ':</td><td>' .PMBP_config_print('ftp_path') . "</td>\n";
-		echo '<td>' . C_FTP_PASV . ':</td><td>' .PMBP_config_print('ftp_pasv') . "</td>\n";
-		echo '<td>' . C_FTP_PORT . ':</td><td>' .PMBP_config_print('ftp_port') . "</td>\n";
-		echo '<td>' . C_FTP_DEL  . ':</td><td>' .PMBP_config_print('ftp_del')  . "</td>\n";
+		echo '<td>' . C_FTP_PATH . ':</td><td>' . PMBP_config_print('ftp_path') . "</td>\n";
+		echo '<td>' . C_FTP_PASV . ':</td><td>' . PMBP_config_print('ftp_pasv') . "</td>\n";
+		echo '<td>' . C_FTP_PORT . ':</td><td>' . PMBP_config_print('ftp_port') . "</td>\n";
+		echo '<td>' . C_FTP_DEL  . ':</td><td>' . PMBP_config_print('ftp_del')  . "</td>\n";
 		echo '</tr><tr>';
 	}
 	echo '<td><br /><div class="bold_left">' . C_TITLE_CONFIG . "</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
-	echo '<td>' . C_TIMELIMIT. ' (' . F_SECONDS . ')*:</td><td>'.PMBP_config_print('timelimit') . "</td>\n";
+	echo '<td>' . C_TIMELIMIT. ' (' . F_SECONDS . ')*:</td><td>'. PMBP_config_print('timelimit') . "</td>\n";
 	echo '<td>' . C_CONFIRM . '*:</td><td>' . PMBP_config_print('confirm') . "</td>\n";
 	if($PMBP_MU_CONF['allow_dir_backup'])
 	{
-		echo '<td>' . C_DIR_BACKUP . ':</td><td>' .PMBP_config_print('dir_backup') . "</td>\n";
-		echo '<td>' . C_DIR_REC    . ':</td><td>' .PMBP_config_print('dir_rec')    . "</td>\n";
+		echo '<td>' . C_DIR_BACKUP . ':</td><td>' . PMBP_config_print('dir_backup') . "</td>\n";
+		echo '<td>' . C_DIR_REC    . ':</td><td>' . PMBP_config_print('dir_rec')    . "</td>\n";
 	}
 	else
 	{
@@ -304,7 +323,7 @@ if($_SESSION['multi_user_mode'])
 elseif(isset($_GET['ext']))
 {
 	echo '<tr>';
-	echo '<td><br /><div class="bold_left">'.C_TITLE_STYLE."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
+	echo '<td><br /><div class="bold_left">' . C_TITLE_STYLE."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
 	echo '<td>' . C_STYLESHEET . '*:</td><td>' . PMBP_config_print('stylesheet') . "</td>\n";
 	echo '<td>' . C_DATE       . '*:</td><td>' . PMBP_config_print('date')       . "</td>\n";
@@ -318,7 +337,7 @@ elseif(isset($_GET['ext']))
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo '</tr><tr>';
-	echo '<td><br /><div class="bold_left">'.C_TITLE_CONFIG."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
+	echo '<td><br /><div class="bold_left">' . C_TITLE_CONFIG."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
 	echo '<td>' . C_TIMELIMIT . ' (' . F_SECONDS . ')*:</td><td>' . PMBP_config_print("timelimit")."</td>\n";
 	echo '<td>' . C_CONFIRM      . '*:</td><td>' . PMBP_config_print('confirm')      . "</td>\n";
@@ -333,7 +352,7 @@ elseif(isset($_GET['ext']))
 }
 elseif(isset($_GET['sys']))
 {
-	echo '<div class="red">'.PMBP_C_SYS_WARNING."</div><br />";
+	echo '<div class="red">'. PMBP_C_SYS_WARNING."</div><br />";
 	$i=0;
 	foreach($PMBP_SYS_VAR as $key=>$value)
 	{
@@ -348,12 +367,12 @@ else
 {
 	echo '<tr>';
 	echo '<td colspan="8">&nbsp;</td></tr>';
-	echo '<tr><td>'.C_SITENAME."*:</td><td>".PMBP_config_print('sitename')."</td>\n";
-	echo '<td>' . C_LANG."*:</td><td>".PMBP_config_print('lang')."</td>\n";
+	echo '<tr><td>' . C_SITENAME . '*:</td><td>' . PMBP_config_print('sitename')."</td>\n";
+	echo '<td>'     . C_LANG     . '*:</td><td>' . PMBP_config_print('lang')."</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo '</tr><tr>';
-	echo '<td><br /><div class="bold_left">'.C_TITLE_SQL."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
+	echo '<td><br /><div class="bold_left">' . C_TITLE_SQL."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
 	echo '<td>' . C_SQL_HOST   . '*:</td><td>'. PMBP_config_print('sql_host')   . "</td>\n";
 	echo '<td>' . C_SQL_USER   . '*:</td><td>'. PMBP_config_print('sql_user')   . "</td>\n";
@@ -362,25 +381,25 @@ else
 	echo '</tr><tr>';
 	echo '<td><br /><div class="bold_left">' . C_TITLE_FTP . "</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
-	echo '<td>' . C_FTP_USE. ':</td><td>' .PMBP_config_print("ftp_use")."</td>\n";
-	echo '<td>' . C_FTP_SERVER. ':</td><td>' .PMBP_config_print("ftp_server")."</td>\n";
-	echo '<td>' . C_FTP_USER. ':</td><td>' .PMBP_config_print("ftp_user")."</td>\n";
-	echo '<td>' . C_FTP_PASSWD. ':</td><td>' .PMBP_config_print("ftp_passwd")."</td>\n";
+	echo '<td>' . C_FTP_USE. ':</td><td>' . PMBP_config_print("ftp_use")."</td>\n";
+	echo '<td>' . C_FTP_SERVER. ':</td><td>' . PMBP_config_print("ftp_server")."</td>\n";
+	echo '<td>' . C_FTP_USER. ':</td><td>' . PMBP_config_print("ftp_user")."</td>\n";
+	echo '<td>' . C_FTP_PASSWD. ':</td><td>' . PMBP_config_print("ftp_passwd")."</td>\n";
 	echo '</tr><tr>';
-	echo '<td>' . C_FTP_PATH. ':</td><td>' .PMBP_config_print('ftp_path')."</td>\n";
-	echo '<td>' . C_FTP_PASV. ':</td><td>' .PMBP_config_print('ftp_pasv')."</td>\n";
-	echo '<td>' . C_FTP_PORT. ':</td><td>' .PMBP_config_print('ftp_port')."</td>\n";
-	echo '<td>' . C_FTP_DEL. ':</td><td>' .PMBP_config_print('ftp_del')."</td>\n";
+	echo '<td>' . C_FTP_PATH. ':</td><td>' . PMBP_config_print('ftp_path')."</td>\n";
+	echo '<td>' . C_FTP_PASV. ':</td><td>' . PMBP_config_print('ftp_pasv')."</td>\n";
+	echo '<td>' . C_FTP_PORT. ':</td><td>' . PMBP_config_print('ftp_port')."</td>\n";
+	echo '<td>' . C_FTP_DEL. ':</td><td>' . PMBP_config_print('ftp_del')."</td>\n";
 	echo '</tr><tr>';
 	echo '<td><br /><div class="bold_left">' . C_TITLE_EMAIL . "</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
-	echo '<td>' . C_EMAIL_USE. ':</td><td>' .PMBP_config_print('email_use')."</td>\n";
-	echo '<td>' . C_EMAIL. ':</td><td>' .PMBP_config_print('email')."</td>\n";
+	echo '<td>' . C_EMAIL_USE. ':</td><td>' . PMBP_config_print('email_use')."</td>\n";
+	echo '<td>' . C_EMAIL. ':</td><td>' . PMBP_config_print('email')."</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo "</tr>";
 }
-echo "<tr><td colspan=\"8\">\n<input name=\"submit\" type=\"submit\" value=\"".C_SAVE."\" class=\"button\"></td></tr>\n</table>\n</form>";
+echo '<tr><td colspan="8">' . "\n" . '<input name="submit" type="submit" value="' . C_SAVE . '" class="button" /></td></tr>' . "\n</table>\n</form>";
 PMBP_print_footer();
 
 
@@ -414,7 +433,7 @@ function PMBP_config_print($item)
 	{
 		if($CONF[$item]) $status=' checked';
 		else             $status=' ';
-		$out='<input type="checkbox" name="' . $item . '" value="' . $CONF[$item] . '"' . $status.PMBP_config_disable($item) . '>';
+		$out='<input type="checkbox" name="' . $item . '" value="' . $CONF[$item] . '"' . $status. PMBP_config_disable($item) . '>';
 	}
 	elseif(in_array($item,$password))
 	{
@@ -439,7 +458,7 @@ function PMBP_config_print($item)
 			if(substr($file,-(strlen($filelist[$item][1])),strlen($filelist[$item][1]))==$filelist[$item][1])
 			$files[] = substr($file,0,strlen($file)-strlen($filelist[$item][1]));
 		}
-		$out='<select name="' . $item . "\">\n";
+		$out = '<select name="' . $item . '">' . "\n";
 		foreach($files as $file)
 		{
 			if($file==$CONF[$item]) $out .= '<option value="' . $file . '" selected>' . $file . "</option>\n";
@@ -449,7 +468,7 @@ function PMBP_config_print($item)
 	}
 	else
 	{
-		$out='<input type="text" size="10" name="' . $item . '" value="' . $CONF[$item] . '"' . PMBP_config_disable($item) . '><br />';
+		$out='<input type="text" size="10" name="' . $item . '" value="' . $CONF[$item] . '"' . PMBP_config_disable($item) . ' /><br />';
 	}
 		return $out;
 }
@@ -462,12 +481,17 @@ function PMBP_config_disable($item)
 	global $PMBP_MU_CONF;
 
 	// availability check for some functions
-	$disable=array('ftp_use'=>'!function_exists("ftp_connect")', 'ftp_server'=>'!function_exists("ftp_connect")',
-	'ftp_user'=>'!function_exists("ftp_connect")','ftp_passwd'=>'!function_exists("ftp_connect")',
-	'ftp_path'=>'!function_exists("ftp_connect")','ftp_pasv'=>'!function_exists("ftp_connect")',
-	'ftp_port'=>'!function_exists("ftp_connect")','email_use'=>'!function_exists("mail")','email'=>'!function_exists("mail")',
-	'no_login'=>($_SESSION['multi_user_mode'] || $CONF['login'])?1:0,
-	'timelimit'=>'ini_get("safe_mode")');
+	$disable['ftp_use']    = '!function_exists("ftp_connect")';
+	$disable['ftp_server'] = '!function_exists("ftp_connect")';
+	$disable['ftp_user']   = '!function_exists("ftp_connect")';
+	$disable['ftp_passwd'] = '!function_exists("ftp_connect")';
+	$disable['ftp_path']   = '!function_exists("ftp_connect")';
+	$disable['ftp_pasv']   = '!function_exists("ftp_connect")';
+	$disable['ftp_port']   = '!function_exists("ftp_connect")';
+	$disable['email_use']  = '!function_exists("mail")';
+	$disable['email']      = '!function_exists("mail")';
+	$disable['no_login']   = ($_SESSION['multi_user_mode'] || $CONF['login']) ? 1 : 0;
+	$disable['timelimit']  = 'ini_get("safe_mode")';
 
 	// disable selected items due to system restrictions
 	$out='';

@@ -397,12 +397,16 @@ function PMBP_config_print($item)
 	$password=array('sql_passwd','ftp_passwd');
 	$select['confirm']=array(C_CONFIRM_1,C_CONFIRM_2,C_CONFIRM_3,C_CONFIRM_4);
 	$time=time();
-	$select['date']=array(BD_DATE_FORMAT=>strftime(BD_DATE_FORMAT,$time),
-	'%x %X'=>strftime('%x %X',$time),'%x %H:%M'=>strftime('%x %H:%M',$time),
-	'%m/%d/%y %X'=>strftime('%m/%d/%y %X',$time),'%m/%d/%y %H:%M'=>strftime('%m/%d/%y %H:%M',$time),
-	'%b %d %Y %X'=>strftime('%b %d %Y %X',$time),'%b %d %Y %H:%M'=>strftime('%b %d %Y %H:%M',$time),
-	'%Y/%m/%d %X'=>strftime('%Y/%m/%d %X',$time),'%Y/%m/%d %H:%M'=>strftime('%Y/%m/%d %H:%M',$time));
-	$filelist['lang']=array(PMBP_LANGUAGE_DIR, '.inc.php');
+	$select['date'][BD_DATE_FORMAT]   = strftime(BD_DATE_FORMAT,$time);
+	$select['date']['%x %X']          = strftime('%x %X',$time);
+	$select['date']['%x %H:%M']       = strftime('%x %H:%M',$time);
+	$select['date']['%m/%d/%y %X']    = strftime('%m/%d/%y %X',$time);
+	$select['date']['%m/%d/%y %H:%M'] = strftime('%m/%d/%y %H:%M',$time);
+	$select['date']['%b %d %Y %X']    = strftime('%b %d %Y %X',$time);
+	$select['date']['%b %d %Y %H:%M'] = strftime('%b %d %Y %H:%M',$time);
+	$select['date']['%Y/%m/%d %X']    = strftime('%Y/%m/%d %X',$time);
+	$select['date']['%Y/%m/%d %H:%M'] = strftime('%Y/%m/%d %H:%M',$time);
+	$filelist['lang'] = array(PMBP_LANGUAGE_DIR, '.inc.php');
 	$filelist['stylesheet']=array(PMBP_STYLESHEET_DIR,'.css');
 
 	// create the html code

@@ -250,12 +250,12 @@ if($_SESSION['multi_user_mode'])
 		echo '<td><br /><div class="bold_left">'.C_TITLE_DELETE."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	}
 	echo '</tr><tr>';
-	echo '<td>' . C_DEL_TIME .   ':</td><td>' .PMBP_config_print("del_time")."</td>\n";
-	echo '<td>' . C_DEL_NUMBER . ':</td><td>' .PMBP_config_print("del_number")."</td>\n";
+	echo '<td>' . C_DEL_TIME .   ':</td><td>' .PMBP_config_print('del_time')   . "</td>\n";
+	echo '<td>' . C_DEL_NUMBER . ':</td><td>' .PMBP_config_print('del_number') . "</td>\n";
 	if($PMBP_MU_CONF['allow_email'])
 	{
-		echo '<td>' . C_EMAIL_USE. ':</td><td>' .PMBP_config_print("email_use")."</td>\n";
-		echo '<td>' . C_EMAIL. ':</td><td>' .PMBP_config_print("email")."</td>\n";
+		echo '<td>' . C_EMAIL_USE. ':</td><td>' .PMBP_config_print('email_use') . "</td>\n";
+		echo '<td>' . C_EMAIL. ':</td><td>' .PMBP_config_print('email')         . "</td>\n";
 	}
 	else
 	{
@@ -269,65 +269,65 @@ if($_SESSION['multi_user_mode'])
 		echo '</tr><tr>';
 		if($PMBP_MU_CONF['allow_ftp'])
 		{
-			echo '<td>' . C_FTP_USE. ':</td><td>' .PMBP_config_print("ftp_use")."</td>\n";
+			echo '<td>' . C_FTP_USE. ':</td><td>' .PMBP_config_print('ftp_use') . "</td>\n";
 		}
 		else
 		{
 			echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 		}
-		echo '<td>' . C_FTP_SERVER. ':</td><td>' .PMBP_config_print("ftp_server")."</td>\n";
-		echo '<td>' . C_FTP_USER. ':</td><td>' .PMBP_config_print("ftp_user")."</td>\n";
-		echo '<td>' . C_FTP_PASSWD. ':</td><td>' .PMBP_config_print("ftp_passwd")."</td>\n";
+		echo '<td>' . C_FTP_SERVER . ':</td><td>' .PMBP_config_print('ftp_server') . "</td>\n";
+		echo '<td>' . C_FTP_USER   . ':</td><td>' .PMBP_config_print('ftp_user')   . "</td>\n";
+		echo '<td>' . C_FTP_PASSWD . ':</td><td>' .PMBP_config_print('ftp_passwd') . "</td>\n";
 		echo '</tr><tr>';
-		echo '<td>' . C_FTP_PATH. ':</td><td>' .PMBP_config_print("ftp_path")."</td>\n";
-		echo '<td>' . C_FTP_PASV. ':</td><td>' .PMBP_config_print("ftp_pasv")."</td>\n";
-		echo '<td>' . C_FTP_PORT. ':</td><td>' .PMBP_config_print("ftp_port")."</td>\n";
-		echo '<td>' . C_FTP_DEL. ':</td><td>' .PMBP_config_print("ftp_del")."</td>\n";
+		echo '<td>' . C_FTP_PATH . ':</td><td>' .PMBP_config_print('ftp_path') . "</td>\n";
+		echo '<td>' . C_FTP_PASV . ':</td><td>' .PMBP_config_print('ftp_pasv') . "</td>\n";
+		echo '<td>' . C_FTP_PORT . ':</td><td>' .PMBP_config_print('ftp_port') . "</td>\n";
+		echo '<td>' . C_FTP_DEL  . ':</td><td>' .PMBP_config_print('ftp_del')  . "</td>\n";
 		echo '</tr><tr>';
 	}
-	echo '<td><br /><div class="bold_left">'.C_TITLE_CONFIG."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
+	echo '<td><br /><div class="bold_left">' . C_TITLE_CONFIG . "</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
-	echo '<td>' . C_TIMELIMIT." (".F_SECONDS.")*:</td><td>".PMBP_config_print("timelimit")."</td>\n";
-	echo '<td>' . C_CONFIRM."*:</td><td>".PMBP_config_print("confirm")."</td>\n";
+	echo '<td>' . C_TIMELIMIT. ' (' . F_SECONDS . ')*:</td><td>'.PMBP_config_print('timelimit') . "</td>\n";
+	echo '<td>' . C_CONFIRM . '*:</td><td>' . PMBP_config_print('confirm') . "</td>\n";
 	if($PMBP_MU_CONF['allow_dir_backup'])
 	{
-		echo '<td>' . C_DIR_BACKUP. ':</td><td>' .PMBP_config_print("dir_backup")."</td>\n";
-		echo '<td>' . C_DIR_REC. ':</td><td>' .PMBP_config_print("dir_rec")."</td>\n";
+		echo '<td>' . C_DIR_BACKUP . ':</td><td>' .PMBP_config_print('dir_backup') . "</td>\n";
+		echo '<td>' . C_DIR_REC    . ':</td><td>' .PMBP_config_print('dir_rec')    . "</td>\n";
 	}
 	else
 	{
 		echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 		echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	}
-	echo "</tr>";
+	echo '</tr>';
 }
 elseif(isset($_GET['ext']))
 {
 	echo '<tr>';
 	echo '<td><br /><div class="bold_left">'.C_TITLE_STYLE."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
-	echo '<td>' . C_STYLESHEET."*:</td><td>".PMBP_config_print("stylesheet")."</td>\n";
-	echo '<td>' . C_DATE."*:</td><td>".PMBP_config_print("date")."</td>\n";
-	echo '<td>' . C_LOGIN."*:</td><td>".PMBP_config_print("login")."</td>\n";
+	echo '<td>' . C_STYLESHEET . '*:</td><td>' . PMBP_config_print('stylesheet') . "</td>\n";
+	echo '<td>' . C_DATE       . '*:</td><td>' . PMBP_config_print('date')       . "</td>\n";
+	echo '<td>' . C_LOGIN      . '*:</td><td>' . PMBP_config_print('login')      . "</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo '</tr><tr>';
-	echo '<td><br /><div class="bold_left">'.C_TITLE_DELETE."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
+	echo '<td><br /><div class="bold_left">' . C_TITLE_DELETE . "</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
-	echo '<td>' . C_DEL_TIME. ':</td><td>' .PMBP_config_print("del_time")."</td>\n";
-	echo '<td>' . C_DEL_NUMBER. ':</td><td>' .PMBP_config_print("del_number")."</td>\n";
+	echo '<td>' . C_DEL_TIME   . ':</td><td>' . PMBP_config_print('del_time')   . "</td>\n";
+	echo '<td>' . C_DEL_NUMBER . ':</td><td>' . PMBP_config_print('del_number') . "</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo '</tr><tr>';
 	echo '<td><br /><div class="bold_left">'.C_TITLE_CONFIG."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
-	echo '<td>' . C_TIMELIMIT." (".F_SECONDS.")*:</td><td>".PMBP_config_print("timelimit")."</td>\n";
-	echo '<td>' . C_CONFIRM."*:</td><td>".PMBP_config_print("confirm")."</td>\n";
-	echo '<td>' . C_IMPORT_ERROR. ':</td><td>' .PMBP_config_print("import_error")."</td>\n";
+	echo '<td>' . C_TIMELIMIT . ' (' . F_SECONDS . ')*:</td><td>' . PMBP_config_print("timelimit")."</td>\n";
+	echo '<td>' . C_CONFIRM      . '*:</td><td>' . PMBP_config_print('confirm')      . "</td>\n";
+	echo '<td>' . C_IMPORT_ERROR . ':</td><td>'  . PMBP_config_print('import_error') . "</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo '</tr><tr>';
-	echo '<td>' . C_DIR_BACKUP. ':</td><td>' .PMBP_config_print("dir_backup")."</td>\n";
-	echo '<td>' . C_DIR_REC. ':</td><td>' .PMBP_config_print("dir_rec")."</td>\n";
-	echo "<td>[".C_NO_LOGIN. ':</td><td>' .PMBP_config_print("no_login")."]</td>\n";
+	echo '<td>' . C_DIR_BACKUP . ':</td><td>' . PMBP_config_print('dir_backup') . "</td>\n";
+	echo '<td>' . C_DIR_REC    . ':</td><td>' . PMBP_config_print('dir_rec') . "</td>\n";
+	echo "<td>[".C_NO_LOGIN    . ':</td><td>' . PMBP_config_print('no_login') . "]</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo "</tr>";
 }
@@ -348,19 +348,19 @@ else
 {
 	echo '<tr>';
 	echo '<td colspan="8">&nbsp;</td></tr>';
-	echo '<tr><td>'.C_SITENAME."*:</td><td>".PMBP_config_print("sitename")."</td>\n";
-	echo '<td>' . C_LANG."*:</td><td>".PMBP_config_print("lang")."</td>\n";
+	echo '<tr><td>'.C_SITENAME."*:</td><td>".PMBP_config_print('sitename')."</td>\n";
+	echo '<td>' . C_LANG."*:</td><td>".PMBP_config_print('lang')."</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo "<td>&nbsp;</td><td>&nbsp;</td>\n";
 	echo '</tr><tr>';
 	echo '<td><br /><div class="bold_left">'.C_TITLE_SQL."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
-	echo '<td>' . C_SQL_HOST."*:</td><td>".PMBP_config_print("sql_host")."</td>\n";
-	echo '<td>' . C_SQL_USER."*:</td><td>".PMBP_config_print("sql_user")."</td>\n";
-	echo '<td>' . C_SQL_PASSWD."*:</td><td>".PMBP_config_print("sql_passwd")."</td>\n";
-	echo '<td>' . C_SQL_DB. ':</td><td>' .PMBP_config_print("sql_db")."</td>\n";
+	echo '<td>' . C_SQL_HOST   . '*:</td><td>'. PMBP_config_print('sql_host')   . "</td>\n";
+	echo '<td>' . C_SQL_USER   . '*:</td><td>'. PMBP_config_print('sql_user')   . "</td>\n";
+	echo '<td>' . C_SQL_PASSWD . '*:</td><td>'. PMBP_config_print('sql_passwd') . "</td>\n";
+	echo '<td>' . C_SQL_DB     . ':</td><td>' . PMBP_config_print('sql_db')     . "</td>\n";
 	echo '</tr><tr>';
-	echo '<td><br /><div class="bold_left">'.C_TITLE_FTP."</div></td><td colspan=\"7\"><br /><hr /></td>\n";
+	echo '<td><br /><div class="bold_left">' . C_TITLE_FTP . "</div></td><td colspan=\"7\"><br /><hr /></td>\n";
 	echo '</tr><tr>';
 	echo '<td>' . C_FTP_USE. ':</td><td>' .PMBP_config_print("ftp_use")."</td>\n";
 	echo '<td>' . C_FTP_SERVER. ':</td><td>' .PMBP_config_print("ftp_server")."</td>\n";

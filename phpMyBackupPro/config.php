@@ -406,8 +406,8 @@ function PMBP_config_print($item)
 	$select['date']['%b %d %Y %H:%M'] = strftime('%b %d %Y %H:%M',$time);
 	$select['date']['%Y/%m/%d %X']    = strftime('%Y/%m/%d %X',$time);
 	$select['date']['%Y/%m/%d %H:%M'] = strftime('%Y/%m/%d %H:%M',$time);
-	$filelist['lang'] = array(PMBP_LANGUAGE_DIR, '.inc.php');
-	$filelist['stylesheet']=array(PMBP_STYLESHEET_DIR,'.css');
+	$filelist['lang']       = array(PMBP_LANGUAGE_DIR,   '.inc.php');
+	$filelist['stylesheet'] = array(PMBP_STYLESHEET_DIR, '.css');
 
 	// create the html code
 	if(isset($checkbox[$item]))
@@ -423,8 +423,10 @@ function PMBP_config_print($item)
 	{
 		$out='<select name="' . $item . '"' . PMBP_config_disable($item) . ">\n";
 		foreach($select[$item] as $opt_no=>$print_value)
-		if($opt_no==$CONF[$item]) $out .= '<option value="' .$opt_no . '" selected>' . $print_value . "</option>\n";
-		else $out .= '<option value="' . $opt_no . '">' . $print_value . "</option>\n";
+		{
+			if($opt_no==$CONF[$item]) $out .= '<option value="' . $opt_no . '" selected>' . $print_value . "</option>\n";
+			else                      $out .= '<option value="' . $opt_no . '">'          . $print_value . "</option>\n";
+		}
 		$out .='</select>' . "\n";
 	}
 	elseif(isset($filelist[$item]))

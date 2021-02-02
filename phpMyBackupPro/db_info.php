@@ -103,7 +103,8 @@ if (!$con) {
 //else
 {
 
-	echo "<table border=\"0\" cellspacing=\"2\" cellpadding=\"0\" width=\"100%\">\n";
+	echo '<table border="0" cellspacing="2" cellpadding="0" width="100%">
+';
 	
 	// list all databases
 	$all_dbs=PMBP_get_db_list();
@@ -160,4 +161,3 @@ if (!$con) {
 	echo "</table>\n";
 }
 PMBP_print_footer();
-?>

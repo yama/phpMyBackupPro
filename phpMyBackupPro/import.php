@@ -98,13 +98,13 @@ if ($_GET['import'] || $_GET['imp_ALL'])
 			{
 				$error="";
 				// extract zip file
-				if (PMBP_file_info("comp",PMBP_EXPORT_DIR.$import_file)=="zip")
+				if (PMBP_file_info("comp",PMBP_EXPORT_DIR.$import_file) === "zip")
 				{
 					include_once("pclzip.lib.php");
 					$pclzip = new PclZip(PMBP_EXPORT_DIR.$import_file);
 					$extracted_file=$pclzip->extractByIndex(0,"./".PMBP_EXPORT_DIR,"");
 					if ($pclzip->error_code!=0) $error="plczip: ".$pclzip->error_string."<br>".BI_BROKEN_ZIP."!";
-					$import_file=substr($import_file,0,strlen($import_file)-4);
+					$import_file=substr($import_file,0, -4);
 					unset($pclzip);
 				}
 				
@@ -225,7 +225,7 @@ if ($_GET['del'])
 // get new list of backup files
 $all_files=PMBP_get_backup_files();
 
-echo "<table border=\"0\" cellspacing=\"2\" cellpadding=\"0\" width=\"100%\">\n";
+echo '<table border="0" cellspacing="2" cellpadding="0" width="100%">';
 
 // list all backup files
 if (is_array($all_files))

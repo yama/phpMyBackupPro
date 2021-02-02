@@ -47,5 +47,7 @@ if (isset($_GET['view']) && file_exists($_GET['view']))
 }
 else
 {
-	if (isset($_GET['view'])) echo $_GET['view']." ".F_MAIL_3."!";
+	if (isset($_GET['view'])) {
+        echo $_GET['view'] . " " . F_MAIL_3 . "!";
+    }
 }

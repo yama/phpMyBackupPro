@@ -58,7 +58,7 @@ if ($selection_ok) {
 
     // create path to run_scheduled.php
     $path_back="";
-    if (strstr($_SERVER['SCRIPT_NAME'],"\\")) $delimiter="\\"; else $delimiter="/";
+    if (strpos($_SERVER['SCRIPT_NAME'], "\\") !== false) $delimiter="\\"; else $delimiter="/";
     $script_path=explode($delimiter,$_SERVER['SCRIPT_NAME']);
     $path_d=count(explode("..",$_POST['path']))-1;
     $path_u=count(explode($delimiter,$_POST['path']))-$path_d-1;
@@ -97,7 +97,7 @@ if ($selection_ok) {
     // print the backup options
     foreach($_POST as $key=>$value) {
         $value=str_replace("\"","'",$value);
-        if ($key!="period" && $key!="path" && $key!="db" && $key!="dirs" && $key!="filename" && $value!='')
+        if ($key !== "period" && $key !== "path" && $key !== "db" && $key !== "dirs" && $key !== "filename" && $value!='')
             $result.="\$_POST['".$key."']=\"".$value."\";\n";
     }
     
@@ -119,14 +119,22 @@ if ($selection_ok) {
     
     // list all post variables as hidden fields
     foreach($_POST as $key=>$value) {
-        if ($key!="db" && $key!="dirs") echo "<input type=\"hidden\" name=\"".$key."\" value=\"".$value."\">\n";
-            elseif(is_array($_POST[$key])) foreach($value as $dbname) echo "<input type=\"hidden\" name=\"".$key."[]\" value=\"".$dbname."\">\n";
+        if ($key !== "db" && $key !== "dirs") {
+            echo "<input type=\"hidden\" name=\"" . $key . "\" value=\"" . $value . "\">\n";
+        } elseif(is_array($_POST[$key])) {
+            foreach ($value as $dbname) {
+                echo "<input type=\"hidden\" name=\"" . $key . "[]\" value=\"" . $dbname . "\">\n";
+            }
+        }
     }
 
     // save file including the backup script
     if (isset($_POST['filename'])) {		
         if (PMBP_save_to_file($_POST['path'].$_POST['filename'],"",$result,"w")) {
-            echo "<span class=\"green_left\">".EX_SAVED." ".PMBP_pop_up($_POST['path'].$_POST['filename'],$_POST['path'].$_POST['filename'],"scheduled")."</span><br>\n";
+            echo sprintf(
+                '<span class="green_left">%s %s</span><br>',
+                EX_SAVED, PMBP_pop_up($_POST['path'] . $_POST['filename'], $_POST['path'] . $_POST['filename'], "scheduled")
+            );
                 
             // save specific settings for scheduled backups
             if ($PMBP_SYS_VAR['EXS_scheduled_file']!=$_POST['filename']) {            
@@ -140,7 +148,7 @@ if ($selection_ok) {
     echo PMBP_EXS_SAVE.":<br>\n";
     echo $_POST['path']."<input type=\"text\" name=\"filename\" value=\"".$PMBP_SYS_VAR['EXS_scheduled_file']."\">&nbsp;";
     echo "<input type=\"submit\" value=\"".C_SAVE."\">";
-    if ($PMBP_SYS_VAR['EXS_scheduled_file']!="???.php")
+    if ($PMBP_SYS_VAR['EXS_scheduled_file'] !== "???.php")
         echo " (<a href=\"\">".PMBP_pop_up("get_file.php?view=".$_POST['path'].$PMBP_SYS_VAR['EXS_scheduled_file'],B_VIEW,"view")."</a>)";
     echo "</form>";
     echo "\n<a href=\"scheduled.php\"> <- ".EXS_BACK."</a>\n";
@@ -238,4 +246,3 @@ if ($selection_ok) {
 }
 
 PMBP_print_footer();
-?>

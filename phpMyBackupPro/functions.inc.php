@@ -143,13 +143,13 @@ echo ' </tr>
     foreach($menu as $filename=>$title)
     {
         // print active link
-        if($filename==$scriptname && $filename!="login.php?logout=TRUE" && $filename!="HELP")
+        if($filename==$scriptname && $filename !== "login.php?logout=TRUE" && $filename !== "HELP")
         {
             echo '  <th class="active">' . "\n" . '   <a href="' . $filename . '" accesskey="' . $accesskeys[$filename] . '" title="[access key = ' . $accesskeys[$filename] . ']">' . PMBP_image_tag(substr($filename,0,strpos($filename,'.')) . '.gif', '', '[accesskey = ' . $accesskeys[$filename] . ']') . $title . "</a>\n  </th>\n";
 
         // print lasting menu
         }
-        elseif($filename!='login.php?logout=TRUE' && $filename!='HELP')
+        elseif($filename !== 'login.php?logout=TRUE' && $filename !== 'HELP')
         {
             echo "  <th>\n" . '   <a href="' . $filename . '" accesskey="' . $accesskeys[$filename] . '" title="[access key = ' . $accesskeys[$filename] . ']">' . PMBP_image_tag(substr($filename,0,strpos($filename, '.')) . '.gif', '', '[accesskey = ' . $accesskeys[$filename] . ']') . $title . "</a>\n  </th>\n";
         }
@@ -309,18 +309,22 @@ function PMBP_print_export_form($dirs1=FALSE) {
     echo PMBP_set_select("backup","db[]","[".F_SELECT_ALL."]");
     echo "\n</td>\n<td>&nbsp;</td>\n<td>\n";
     echo "<textarea name=\"comments\" rows=\"9\" cols=\"80\">".$PMBP_SYS_VAR['F_comment']."</textarea>\n<br />";
-    if($PMBP_SYS_VAR['F_tables']) $checked="checked"; else $checked="";
+    $checked = $PMBP_SYS_VAR['F_tables'] ? "checked" : "";
     echo "<input type=\"checkbox\" name=\"tables\" ".$checked.">".F_EX_TABLES." | ";
-    if($PMBP_SYS_VAR['F_data']) $checked="checked"; else $checked="";    
-    echo "<input type=\"checkbox\" name=\"data\" ".$checked.">".F_EX_DATA." | ";
+    $checked = $PMBP_SYS_VAR['F_data'] ? "checked" : "";
+    echo '<input type="checkbox" name="data" '.$checked.">".F_EX_DATA." | ";
     if($PMBP_SYS_VAR['F_drop']) $checked="checked"; else $checked="";    
-    echo "<input type=\"checkbox\" name=\"drop\" ".$checked.">".F_EX_DROP." | ";
+    echo '<input type="checkbox" name="drop" '.$checked.">".F_EX_DROP." | ";
 
     $comp_off=$comp_gzip=$comp_zip="";
-    if($PMBP_SYS_VAR['F_compression']=="gzip" && !$disable_gzip) $comp_gzip=" selected";
-        elseif($PMBP_SYS_VAR['F_compression']=="zip") $comp_zip=" selected";
-            else $comp_off=" selected";
-            
+    if($PMBP_SYS_VAR['F_compression'] === "gzip" && !$disable_gzip) {
+        $comp_gzip = " selected";
+    } elseif($PMBP_SYS_VAR['F_compression'] === "zip") {
+        $comp_zip = " selected";
+    } else {
+        $comp_off = " selected";
+    }
+
     echo F_EX_COMP."
 <select name=\"zip\">
 <option".$comp_off." value=\"\">".F_EX_OFF."</option>
@@ -334,7 +338,7 @@ function PMBP_print_export_form($dirs1=FALSE) {
         
         $last_dirs=explode("|",$PMBP_SYS_VAR['F_ftp_dirs']);
 
-        echo "\n\n<table width=\"940\">\n";
+        echo '<table width="940">';
         echo "<tr>\n<td>\n";
         echo EX_DIRS.":<br />(<a href=\"scheduled.php?update_dir_list=TRUE\">".PMBP_EXS_UPDATE_DIRS."</a>)<br />\n";
         echo "</td>\n<td>&nbsp;</td>\n<td>\n";
@@ -413,16 +417,25 @@ function PMBP_image_tag($image,$alt="",$title="",$link=""){
     } else {
         $size=getimagesize(PMBP_IMAGE_DIR.basename($image));
     }
-    if ($link)
-        return "<a href=\"".$link."\"><img src=\"".$image."\" alt=\"".$alt."\" title=\"".$title."\" ".$size[3]."></a>";
-    else
-        return "<img src=\"".$image."\" alt=\"".$alt."\" title=\"".$title."\" ".$size[3].">";
+    if ($link) {
+        return sprintf(
+            '<a href="%s"><img src="%s" alt="%s" title="%s" %s></a>',
+            $link, $image, $alt, $title, $size[3]
+        );
+    }
+    return sprintf(
+        '<img src="%s" alt="%s" title="%s" %s>',
+        $image, $alt, $title, $size[3]
+    );
 }
 
 
 // generates javascript 'select all in input select' link
 function PMBP_set_select($form,$select,$link){
-    return "<a href=\"\" onclick=\"setSelect('".$form."','".$select."'); return false;\">".$link."</a>";
+    return sprintf(
+        '<a href="" onclick="setSelect(\'%s\',\'%s\'); return false;">%s</a>',
+        $form, $select, $link
+    );
 }
 
 
@@ -448,26 +461,47 @@ function PMBP_confirm($text,$path,$link,$popupType=false){
                 else return "<a href='javascript:confirmClick(\"".$text."\",\"".$path."\")'>".$link."</a>";
         case 1:
             if ($popupType) {
-                if (strstr($path,"all") || strstr($path,"ALL")) return "<a href='javascript:popUp(\"".$path."\",\"".$popupType."\",true,\"".$text."\")'>".$link."</a>";
-                    else return "<a href='javascript:popUp(\"".$path."\",\"".$popupType."\",false,\"\")'>".$link."</a>";
-            } else {
-                if (strstr($path,"all") || strstr($path,"ALL")) return "<a href='javascript:confirmClick(\"".$text."\",\"".$path."\")'>".$link."</a>";
-                    else return "<a href=\"".$path."\">".$link."</a>";            
+                if (strpos($path, "all") !== false || strpos($path, "ALL") !== false) {
+                    return sprintf(
+                        "<a href='javascript:popUp(\"%s\",\"%s\",true,\"%s\")'>%s</a>",
+                        $path, $popupType, $text, $link
+                    );
+                }
+                return sprintf(
+                    "<a href='javascript:popUp(\"%s\",\"%s\",false,\"\")'>%s</a>",
+                    $path, $popupType, $link
+                );
             }
+            if (strpos($path, "all") !== false || strpos($path, "ALL") !== false) {
+                return sprintf(
+                    "<a href='javascript:confirmClick(\"%s\",\"%s\")'>%s</a>",
+                    $text, $path, $link
+                );
+            }
+            return "<a href=\"" . $path . "\">" . $link . "</a>";
         case 2:
             if ($popupType) {
-                if (strstr($path,"ALL")) return "<a href='javascript:popUp(\"".$path."\",\"".$popupType."\",true,\"".$text."\")'>".$link."</a>";
-                    else return "<a href='javascript:popUp(\"".$path."\",\"".$popupType."\",false,\"\")'>".$link."</a>";
-            } else {
-                if (strstr($path,"ALL")) return "<a href='javascript:confirmClick(\"".$text."\",\"".$path."\")'>".$link."</a>";
-                    else return "<a href=\"".$path."\">".$link."</a>";            
+                if (strpos($path, "ALL") !== false) {
+                    return sprintf(
+                        "<a href='javascript:popUp(\"%s\",\"%s\",true,\"%s\")'>%s</a>",
+                        $path, $popupType, $text, $link
+                    );
+                }
+                return sprintf(
+                    "<a href='javascript:popUp(\"%s\",\"%s\",false,\"\")'>%s</a>",
+                    $path, $popupType, $link
+                );
             }
+
+            if (strpos($path, "ALL") !== false) {
+                return "<a href='javascript:confirmClick(\"" . $text . "\",\"" . $path . "\")'>" . $link . "</a>";
+            }
+            return "<a href=\"" . $path . "\">" . $link . "</a>";
         case 3:
             if ($popupType) {
                 return "<a href='javascript:popUp(\"".$path."\",\"".$popupType."\",false,\"\")'>".$link."</a>";
-            } else {
-                return "<a href=\"".$path."\">".$link."</a>";
             }
+            return "<a href=\"".$path."\">".$link."</a>";
     }
 }
 
@@ -1501,4 +1535,3 @@ function PMBP_auth () {
     header("HTTP/1.0 401 Unauthorized");
     echo LI_MSG."\n";
 }
-?>

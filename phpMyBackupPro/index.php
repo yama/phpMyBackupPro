@@ -27,17 +27,17 @@ require_once("login.php");
 PMBP_print_header(preg_replace('@.*/@', '', $_SERVER['SCRIPT_NAME']));
 
 // if PMBP_GLOBAL_CONF.php is not writeable
-if(!is_writeable(PMBP_GLOBAL_CONF)) echo '<div class="red_left">' . I_CONF_ERROR . "</div>\n";
+if(!is_writable(PMBP_GLOBAL_CONF)) echo '<div class="red_left">' . I_CONF_ERROR . "</div>\n";
 
 // if export directory is not writeable
-if(!is_writeable('./' . PMBP_EXPORT_DIR)) echo '<div class="red_left">' . I_DIR_ERROR . "</div>\n";
+if(!is_writable('./' . PMBP_EXPORT_DIR)) echo '<div class="red_left">' . I_DIR_ERROR . "</div>\n";
 
 // if first use or no db-connection possible
 if(!@mysql_connect($CONF['sql_host'],$CONF['sql_user'],$CONF['sql_passwd'])) echo '<div class="red_left">' . C_WRONG_SQL . "</div>\n";
 if($CONF['sql_db']) if(!@mysql_select_db($CONF['sql_db'])) echo '<div class="red_left">' . C_WRONG_DB . "</div>\n";
 
-echo '<br /><div class="bold_left">' . I_NAME . ' ' . PMBP_VERSION . "</div>";
-printf(I_WELCOME, '<a href=' . PMBP_WEBSITE . '>' . PMBP_WEBSITE . '</a>');
+echo sprintf('<br /><div class="bold_left">%s %s</div>', I_NAME, PMBP_VERSION);
+echo sprintf(I_WELCOME, '<a href=' . PMBP_WEBSITE . '>' . PMBP_WEBSITE . '</a>');
 
 // get all system informations
 if(!($server=$_SERVER["SERVER_SOFTWARE"])) $server=PMBP_I_NO_RES;
@@ -51,13 +51,15 @@ else
 {
 	$php=PMBP_I_NO_RES;
 }
-if(!($memory_limit=@ini_get("memory_limit"))) $memory_limit=PMBP_I_NO_RES;
-if(@ini_get('safe_mode')=='1')                $safe_mode = F_YES;         else $safe_mode= '<span class="green_left">' . F_NO . '</span>';
-if(function_exists('ftp_connect'))            $ftp       = F_YES;         else $ftp = '<span class="red_left">' . F_NO . '</span>';
-if(function_exists('mail'))                   $mail      = F_YES;         else $mail='<span class="red_left">' . F_NO . '</span>';
-if(function_exists('gzopen'))                 $gzip      = F_YES;         else $gzip = F_NO;
-if(!function_exists('mysql_get_server_info')) $mysql_s   = PMBP_I_NO_RES; else $mysql_s = @mysql_get_server_info();
-if(!function_exists('mysql_get_client_info')) $mysql_c   = PMBP_I_NO_RES; else $mysql_c = @mysql_get_client_info();
+if(!($memory_limit=@ini_get("memory_limit"))) {
+    $memory_limit = PMBP_I_NO_RES;
+}
+$safe_mode = @ini_get('safe_mode') == 1 ? F_YES : sprintf('<span class="green_left">%s</span>', F_NO);
+$ftp = function_exists('ftp_connect') ? F_YES : sprintf('<span class="red_left">%s</span>', F_NO);
+$mail = function_exists('mail') ? F_YES : sprintf('<span class="red_left">%s</span>', F_NO);
+$gzip = function_exists('gzopen') ? F_YES : F_NO;
+$mysql_s = function_exists('mysql_get_server_info') ? @mysql_get_server_info() : PMBP_I_NO_RES;
+$mysql_c = function_exists('mysql_get_client_info') ? @mysql_get_client_info() : PMBP_I_NO_RES;
 
 // calculate size of all backups and last backup date
 $all_files=PMBP_get_backup_files();
@@ -83,10 +85,9 @@ else
 $scheduled_time=$PMBP_SYS_VAR['last_scheduled'];
 foreach($PMBP_SYS_VAR as $key=>$value)
 {
-	if(substr($key,0,15)=="last_scheduled_" && $value>$scheduled_time) $scheduled_time=$value;
+	if(substr($key,0,15) === "last_scheduled_" && $value>$scheduled_time) $scheduled_time=$value;
 }
-if($scheduled_time) $scheduled_time = strftime($CONF['date'],$scheduled_time);
-else                $scheduled_time = '-';
+$scheduled_time = $scheduled_time ? strftime($CONF['date'], $scheduled_time) : '-';
 
 // print system informations
 echo '<br /><br /><div class="bold_left">' . PMBP_I_INFO."</div>\n";

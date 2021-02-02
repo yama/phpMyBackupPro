@@ -59,4 +59,3 @@ if ($_GET['file']) {
 }
 
 echo "</table>\n</body>\n</html>";
-?>

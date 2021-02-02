@@ -3090,20 +3090,20 @@
 						  $p_header['external'], $p_header['offset']);
 
     // ----- Write the 42 bytes of the header in the zip file
-    fputs($this->zip_fd, $v_binary_data, 46);
+    fwrite($this->zip_fd, $v_binary_data, 46);
 
     // ----- Write the variable fields
     if (strlen($p_header['stored_filename']) != 0)
     {
-      fputs($this->zip_fd, $p_header['stored_filename'], strlen($p_header['stored_filename']));
+      fwrite($this->zip_fd, $p_header['stored_filename'], strlen($p_header['stored_filename']));
     }
     if ($p_header['extra_len'] != 0)
     {
-      fputs($this->zip_fd, $p_header['extra'], $p_header['extra_len']);
+      fwrite($this->zip_fd, $p_header['extra'], $p_header['extra_len']);
     }
     if ($p_header['comment_len'] != 0)
     {
-      fputs($this->zip_fd, $p_header['comment'], $p_header['comment_len']);
+      fwrite($this->zip_fd, $p_header['comment'], $p_header['comment_len']);
     }
 
     // ----- Return
@@ -5649,17 +5649,15 @@
     $v_list = get_defined_constants();
     for (reset($v_list); $v_key = key($v_list); next($v_list)) {
 	    $v_prefix = substr($v_key, 0, 10);
-	    if ((   ($v_prefix == 'PCLZIP_OPT')
-           || ($v_prefix == 'PCLZIP_CB_')
-           || ($v_prefix == 'PCLZIP_ATT'))
+	    if ((   ($v_prefix === 'PCLZIP_OPT')
+           || ($v_prefix === 'PCLZIP_CB_')
+           || ($v_prefix === 'PCLZIP_ATT'))
 	        && ($v_list[$v_key] == $p_option)) {
         return $v_key;
 	    }
     }
-    
-    $v_result = 'Unknown';
 
-    return $v_result;
+    return 'Unknown';
   }
   // --------------------------------------------------------------------------------
 
@@ -5676,19 +5674,15 @@
   // --------------------------------------------------------------------------------
   function PclZipUtilTranslateWinPath($p_path, $p_remove_disk_letter=true)
   {
-    if (stristr(php_uname(), 'windows')) {
+    if (stripos(php_uname(), 'windows') !== false) {
       // ----- Look for potential disk letter
       if (($p_remove_disk_letter) && (($v_position = strpos($p_path, ':')) != false)) {
           $p_path = substr($p_path, $v_position+1);
       }
       // ----- Change potential windows directory separator
-      if ((strpos($p_path, '\\') > 0) || (substr($p_path, 0,1) == '\\')) {
+      if ((strpos($p_path, '\\') > 0) || (strpos($p_path, '\\') === 0)) {
           $p_path = strtr($p_path, '\\', '/');
       }
     }
     return $p_path;
   }
-  // --------------------------------------------------------------------------------
-
-
-?>

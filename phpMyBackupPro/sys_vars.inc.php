@@ -259,6 +259,6 @@ if (!isset($CONF['stylesheet'])) {
 }
 
 // save global_conf.php
-if ($update) PMBP_save_global_conf();
-
-?>
+if ($update) {
+    PMBP_save_global_conf();
+}

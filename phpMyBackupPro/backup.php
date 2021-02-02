@@ -79,7 +79,9 @@ if ($argv) {
         if ($security_key==$PMBP_SYS_VAR['security_key']) {
             // add new 'last_scheduled' system variables if it does not exist for the current account
             if ($_SESSION['wss']<0) {
-                if (!isset($PMBP_SYS_VAR['last_scheduled'])) $PMBP_SYS_VAR['last_scheduled']=0;
+                if (!isset($PMBP_SYS_VAR['last_scheduled'])) {
+                    $PMBP_SYS_VAR['last_scheduled'] = 0;
+                }
             } else {
                 if (!isset($PMBP_SYS_VAR['last_scheduled_'.$_SESSION['wss']])) $PMBP_SYS_VAR['last_scheduled_'.$_SESSION['wss']]=0;
             }
@@ -291,4 +293,3 @@ if ($mode=="web") {
 } elseif ($mode=="incl") {
         return TRUE;
 }
-?>

@@ -79,32 +79,12 @@ if (($_POST['sql_query'] || $_FILES['sql_file']) && $_POST['db']) {
 	
 			// remove comments and store sql queries in $sql_file		
 	        while($line=PMBP_getln($_FILES['sql_file']['tmp_name'],false,$_FILES['sql_file']['name'])) {
-	        	if (trim($line) && substr(trim($line),0,1)!="#" && substr(trim($line),0,2)!="--") $sql_file.=trim($line)."\n";	
+	        	if (trim($line) && substr(trim($line),0,1) !== "#" && substr(trim($line),0,2)!="--") $sql_file.=trim($line)."\n";
 	        }
 	        PMBP_getln($_FILES['sql_file']['tmp_name'],true,$_FILES['sql_file']['name']);
 	        
 	        // do everything below once for the POST-data and once for the file
 	        $file_and_post=array($_POST['sql_query'],$sql_file);
-
-/*
-// alternative code instead of the paragraph before:
-// it uses exec_sql for executing the sql queries but does not output any query results!!!
-
-		    // extract zip file
-		    if (PMBP_file_info("comp",$_FILES['sql_file']['name'])=="zip") {
-				include_once("pclzip.lib.php");
-				$pclzip = new PclZip($_FILES['sql_file']['tmp_name']);
-				$extracted_file=$pclzip->extractByIndex(0,"./".PMBP_EXPORT_DIR,"");
-				if ($pclzip->error_code!=0) $error="plczip: ".$pclzip->error_string."<br>".BI_BROKEN_ZIP."!";
-				$filename="./".PMBP_EXPORT_DIR.$extracted_file[0]["stored_filename"];
-				unset($pclzip);	
-		    }
-
-			$resultArray=PMBP_exec_sql($filehandler=gzopen($filename,"r"),$con);
-			@gzclose($filehandler);
-			@unlink($filename);
-			print_r($resultArray);
-*/
         }
     }
 
@@ -129,8 +109,7 @@ if (($_POST['sql_query'] || $_FILES['sql_file']) && $_POST['db']) {
 	        }
 	
 	        // separate sql queries and remove empty queries
-	        $all_queries=str_replace(";\n",";|:-:--:-:|",$sql_queries);
-	        $all_queries=str_replace(";\r\n",";|:-:--:-:|",$all_queries);
+            $all_queries= str_replace(array(";\n", ";\r\n"), ";|:-:--:-:|", $sql_queries);
 	        $queries=explode("|:-:--:-:|",$all_queries);
 	
 	        // to remove empty rows
@@ -189,7 +168,9 @@ if (($_POST['sql_query'] || $_FILES['sql_file']) && $_POST['db']) {
                 }
             }
 
-	        if (!$key && isset($_FILES['sql_file']['filename'])) echo "======== ".$_FILES['sql_file']['name']." ========<br>\n";
+	        if (!$key && isset($_FILES['sql_file']['filename'])) {
+                echo "======== " . $_FILES['sql_file']['name'] . " ========<br>\n";
+            }
 	    }
 	}
     
@@ -235,4 +216,3 @@ echo "<br><br>\n<input type=\"submit\" value=\"".SQ_SEND."\" class=\"button\">\n
 echo "\n&nbsp;&nbsp;&nbsp;&nbsp;(<input name=\"fragmented\" type=\"checkbox\" class=\"button\"> ".B_IMPORT_FRAG.")<br>\n";
 echo "</div>\n</form>\n";
 PMBP_print_footer();
-?>

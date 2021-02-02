@@ -62,7 +62,7 @@ $CONF['sql_passwd_s']=array();
 $CONF['sql_db_s']=array();
 
 // change path when in shell mode
-if(isset($argv) && basename($_SERVER['SCRIPT_FILENAME'])=="backup.php") {
+if(isset($argv) && basename($_SERVER['SCRIPT_FILENAME']) === "backup.php") {
 	$prepath=dirname($_SERVER['SCRIPT_FILENAME'])."/";
 	//return;	
 } else {
@@ -219,6 +219,6 @@ if (defined("BD_LANG_SHORTCUT") AND $phpvers>=4.3) setlocale(LC_TIME,BD_LANG_SHO
 if ($CONF['lang']=="arabic") define('ARABIC_HTML'," dir=\"rtl\""); else define('ARABIC_HTML',"");
 
 // update the system variables but not before login
-if ($_SESSION['multi_user_mode'] && $_PMBP_GLOBAL_CONF!=PMBP_GLOBAL_CONF || !$_SESSION['multi_user_mode'])
+if ($_SESSION['multi_user_mode'] && $_PMBP_GLOBAL_CONF!=PMBP_GLOBAL_CONF || !$_SESSION['multi_user_mode']) {
     include("sys_vars.inc.php");
-?>
+}

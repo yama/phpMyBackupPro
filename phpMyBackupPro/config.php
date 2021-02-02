@@ -80,34 +80,36 @@ if(isset($_POST['submit']))
 		foreach($CONF as $item=>$value)
 		{
 			// don't save settings for several servers in conf.php
-			if($item=='sql_host_s' || $item=='sql_user_s' || $item=='sql_passwd_s' || $item=='sql_db_s') continue;
+			if($item === 'sql_host_s' || $item === 'sql_user_s' || $item === 'sql_passwd_s' || $item === 'sql_db_s') {
+                continue;
+            }
 
 			// don't save data of settings the user isn't allowed to change
 			if($_SESSION['multi_user_mode'])
 			{
-				if($item=='sitename' && $PMBP_MU_CONF['sitename'])                       continue;
-				if(($item=='email_use'|$item=='email') && !$PMBP_MU_CONF['allow_email']) continue;
+				if($item === 'sitename' && $PMBP_MU_CONF['sitename'])                       continue;
+				if(($item === 'email_use'|$item === 'email') && !$PMBP_MU_CONF['allow_email']) continue;
 
 				if(!$PMBP_MU_CONF['allow_ftp'] && !$PMBP_MU_CONF['allow_dir_backup'])
 				{
-					if($item=='ftp_server') continue;
-					if($item=='ftp_user')   continue;
-					if($item=='ftp_passwd') continue;
-					if($item=='ftp_path')   continue;
-					if($item=='ftp_pasv')   continue;
-					if($item=='ftp_port')   continue;
-					if($item=='ftp_use')    continue;
-					if($item=='dir_backup') continue;
-					if($item=='dir_rec')    continue;
+					if($item === 'ftp_server') continue;
+					if($item === 'ftp_user')   continue;
+					if($item === 'ftp_passwd') continue;
+					if($item === 'ftp_path')   continue;
+					if($item === 'ftp_pasv')   continue;
+					if($item === 'ftp_port')   continue;
+					if($item === 'ftp_use')    continue;
+					if($item === 'dir_backup') continue;
+					if($item === 'dir_rec')    continue;
 				}
 				if($PMBP_MU_CONF['allow_dir_backup'])
 				{
-					if($item=='dir_backup') continue;
-					if($item=='dir_rec')    continue;
+					if($item === 'dir_backup') continue;
+					if($item === 'dir_rec')    continue;
 				}
 				if($PMBP_MU_CONF['allow_ftp'])
 				{
-					if($item=='ftp_use')    continue;
+					if($item === 'ftp_use')    continue;
 				}
 			}
 
@@ -131,7 +133,7 @@ if(isset($_POST['submit']))
 	{
 		foreach($_POST as $key=>$value)
 		{
-			if($key!='submit') $PMBP_SYS_VAR[$key]=$value;
+			if($key !== 'submit') $PMBP_SYS_VAR[$key]=$value;
 		}
 	}
 	// save $CONF to global_conf.php
@@ -167,7 +169,9 @@ foreach($CONF as $key=>$value)
 		switch($validate[$key])
 		{
 			case 'int':
-				if(!preg_match('@^[0-9]+$@',$value)) echo '<div class="red">' . array_search($key,$conf) . "' " . C_WRONG_TYPE . "</div>\n";
+				if(!preg_match('@^[0-9]+$@',$value)) {
+                    echo '<div class="red">' . array_search($key, $conf) . "' " . C_WRONG_TYPE . "</div>\n";
+                }
 				break;
 			case 'float':
 				if(!preg_match('@^(\\|\$)?(0|-?[1-9]\d*|-?(0|[1-9]\d*)\.\d+)$@',$value))
@@ -180,7 +184,7 @@ foreach($CONF as $key=>$value)
 				{
 					foreach(explode(',',$value) as $value2)
 					{
-						if(!preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/', $value2))
+						if(!preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9._-]+)+$/', $value2))
 						{
 							echo "<div class=\"red\">'" . array_search($key,$conf) . "' " . C_WRONG_TYPE . "</div>\n";
 							break;
@@ -477,8 +481,6 @@ function PMBP_config_print($item)
 function PMBP_config_disable($item)
 {
 	global $CONF;
-	global $PMBP_SYS_VAR;
-	global $PMBP_MU_CONF;
 
 	// availability check for some functions
 	$disable['ftp_use']    = '!function_exists("ftp_connect")';
@@ -499,7 +501,7 @@ function PMBP_config_disable($item)
 	{
 		if(eval('return(' . $disable[$item] . ');')) $out = ' disabled';
 		// special case 'timelimit'
-		if($item == 'timelimit' && $out)
+		if($item === 'timelimit' && $out)
 		{
 			$timelimit=ini_get('max_execution_time');
 			if($CONF['timelimit'] != $timelimit)

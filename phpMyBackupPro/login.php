@@ -38,7 +38,9 @@ if ($CONF['login'] && !$_SESSION['multi_user_mode']) {
         echo ": <a href=\"index.php?logout=TRUE\">".F_LOGOUT."</a><br>";
         echo LI_MSG.": <a href=\"index.php?login=TRUE\">".LI_LOGIN."</a>";
         exit;
-    } else if ($_SERVER['PHP_AUTH_PW']!=$CONF['sql_passwd']) {
+    }
+
+    if ($_SERVER['PHP_AUTH_PW']!=$CONF['sql_passwd']) {
         echo LI_LOGED_OUT."<br>\n".LI_MSG;
         echo ": <a href=\"index.php?login=TRUE\">".LI_LOGIN."</a>";
         unset($_SESSION['LOGGED_IN']);
@@ -48,18 +50,24 @@ if ($CONF['login'] && !$_SESSION['multi_user_mode']) {
         @session_destroy();
         exit;
     }
-    
+
     // login with html authentification
 } else {
 
     // disable login functions if $CONF['no_login'] is true
     if ($CONF['no_login']!="1") {
-        if (!isset($_SESSION['LOGGED_IN'])) $_SESSION['LOGGED_IN']=FALSE;    
+        if (!isset($_SESSION['LOGGED_IN'])) {
+            $_SESSION['LOGGED_IN'] = FALSE;
+        }
 
         // not logged in
         if (!$_SESSION['LOGGED_IN']) {
-            if (!isset($_POST['password'])) $_POST['password']=FALSE;
-            if (!isset($_POST['username'])) $_POST['username']=FALSE;            
+            if (!isset($_POST['password'])) {
+                $_POST['password'] = FALSE;
+            }
+            if (!isset($_POST['username'])) {
+                $_POST['username'] = FALSE;
+            }
 
             // distinguish between multi and single user mode
             if ($_SESSION['multi_user_mode'])
@@ -157,4 +165,3 @@ echo PMBP_image_tag("logo.png","phpMyBackupPro","http://www.phpMyBackupPro.net",
         $_SESSION['LOGGED_IN']="Login deactivated!";
     }
 } // end type of auth
-?>

@@ -70,7 +70,7 @@ if(isset($argv) && basename($_SERVER['SCRIPT_FILENAME']) === "backup.php") {
 }
 
 if (function_exists('date_default_timezone_set')) {
-date_default_timezone_set('Asia/Tokyo');
+    date_default_timezone_set('Asia/Tokyo');
 }
 
 // include functions.inc
@@ -93,12 +93,15 @@ if (@include_once($prepath.PMBP_GLOBAL_CONF_MU)) {
         // discover if we are in mu mode
         if (isset($_SESSION['sql_user']) && isset($_SESSION['sql_passwd'])) {
             // admin has logged on
-            if ($_SESSION['sql_user']==$PMBP_MU_CONF['sql_user_admin'] && $_SESSION['sql_passwd']==$PMBP_MU_CONF['sql_passwd_admin'])
-                $_SESSION['multi_user_mode']=FALSE;
-            else 
-                $_SESSION['multi_user_mode']=TRUE;
-            if (isset($_SESSION['LOGGED_IN']))
-                $override_user_date=TRUE;
+            if ($_SESSION['sql_user']==$PMBP_MU_CONF['sql_user_admin'] && $_SESSION['sql_passwd']==$PMBP_MU_CONF['sql_passwd_admin']) {
+                $_SESSION['multi_user_mode'] = FALSE;
+            }
+            else {
+                $_SESSION['multi_user_mode'] = TRUE;
+            }
+            if (isset($_SESSION['LOGGED_IN'])) {
+                $override_user_date = TRUE;
+            }
         } else {
             $_SESSION['multi_user_mode']=TRUE;
         }
@@ -160,7 +163,7 @@ if (count($CONF['sql_host_s'])) {
 
     // load setting from $_SESSION['wss'] as long we are not on the config page and if the host data are still in global_conf_sql.php
     // otherwise set to original host
-    if ($_SESSION['wss']<0 || basename($_SERVER['SCRIPT_NAME'])=="config.php" || !isset($CONF['sql_host_s'][$_SESSION['wss']]) ) {
+    if ($_SESSION['wss']<0 || basename($_SERVER['SCRIPT_NAME']) === "config.php" || !isset($CONF['sql_host_s'][$_SESSION['wss']]) ) {
         $CONF['sql_host']=$_SESSION['sql_host_org'];
         $CONF['sql_user']=$_SESSION['sql_user_org'];
         $CONF['sql_passwd']=$_SESSION['sql_passwd_org'];
@@ -199,11 +202,19 @@ if (!$_SESSION['multi_user_mode']) {
 @mkdir(PMBP_EXPORT_DIR,0777);
 
 // check if language was just changed in config.php
-if (isset($_POST['lang']) && preg_replace('@.*/@',"",$_SERVER['PHP_SELF'])=="config.php") $CONF['lang']=$_POST['lang'];
+if (isset($_POST['lang']) && preg_replace('@.*/@',"",$_SERVER['PHP_SELF']) === "config.php") {
+    $CONF['lang'] = $_POST['lang'];
+}
 
 // include language.inc.php
-if (!isset($CONF['lang'])) $CONF['lang']="english";
-if (!file_exists($prepath.PMBP_LANGUAGE_DIR.$CONF['lang'].".inc.php")) include_once($prepath.PMBP_LANGUAGE_DIR."english.inc.php"); else include($prepath.PMBP_LANGUAGE_DIR.$CONF['lang'].".inc.php");
+if (!isset($CONF['lang'])) {
+    $CONF['lang'] = "english";
+}
+if (!file_exists($prepath.PMBP_LANGUAGE_DIR.$CONF['lang'].".inc.php")) {
+    include_once($prepath . PMBP_LANGUAGE_DIR . "english.inc.php");
+} else {
+    include($prepath . PMBP_LANGUAGE_DIR . $CONF['lang'] . ".inc.php");
+}
 
 // set local time to defined or environment variable value
 if (function_exists("phpversion")) {
@@ -213,10 +224,12 @@ if (function_exists("phpversion")) {
     $phpvers="0";
 }
 
-if (defined("BD_LANG_SHORTCUT") AND $phpvers>=4.3) setlocale(LC_TIME,BD_LANG_SHORTCUT,BD_LANG_SHORTCUT."_".strtoupper('BD_LANG_SHORTCUT')); else setlocale(LC_TIME,"");
+if (defined("BD_LANG_SHORTCUT") AND $phpvers>=4.3) {
+    setlocale(LC_TIME, BD_LANG_SHORTCUT, BD_LANG_SHORTCUT . "_" . strtoupper('BD_LANG_SHORTCUT'));
+} else setlocale(LC_TIME,"");
 
 // special part for arabic language
-if ($CONF['lang']=="arabic") define('ARABIC_HTML'," dir=\"rtl\""); else define('ARABIC_HTML',"");
+if ($CONF['lang'] === "arabic") define('ARABIC_HTML'," dir=\"rtl\""); else define('ARABIC_HTML',"");
 
 // update the system variables but not before login
 if ($_SESSION['multi_user_mode'] && $_PMBP_GLOBAL_CONF!=PMBP_GLOBAL_CONF || !$_SESSION['multi_user_mode']) {

@@ -27,14 +27,23 @@ require_once("login.php");
 PMBP_print_header(preg_replace('@.*/@', '', $_SERVER['SCRIPT_NAME']));
 
 // if PMBP_GLOBAL_CONF.php is not writeable
-if(!is_writable(PMBP_GLOBAL_CONF)) echo '<div class="red_left">' . I_CONF_ERROR . "</div>\n";
+if(!is_writable(PMBP_GLOBAL_CONF)) {
+    echo '<div class="red_left">' . I_CONF_ERROR . "</div>\n";
+}
 
 // if export directory is not writeable
-if(!is_writable('./' . PMBP_EXPORT_DIR)) echo '<div class="red_left">' . I_DIR_ERROR . "</div>\n";
+if(!is_writable('./' . PMBP_EXPORT_DIR)) {
+    echo '<div class="red_left">' . I_DIR_ERROR . "</div>\n";
+}
 
 // if first use or no db-connection possible
-if(!@mysql_connect($CONF['sql_host'],$CONF['sql_user'],$CONF['sql_passwd'])) echo '<div class="red_left">' . C_WRONG_SQL . "</div>\n";
-if($CONF['sql_db']) if(!@mysql_select_db($CONF['sql_db'])) echo '<div class="red_left">' . C_WRONG_DB . "</div>\n";
+if(!@mysql_connect($CONF['sql_host'],$CONF['sql_user'],$CONF['sql_passwd'])) {
+    echo '<div class="red_left">' . C_WRONG_SQL . "</div>\n";
+}
+
+if($CONF['sql_db'] && !@mysql_select_db($CONF['sql_db'])) {
+    echo '<div class="red_left">' . C_WRONG_DB . "</div>\n";
+}
 
 echo sprintf('<br /><div class="bold_left">%s %s</div>', I_NAME, PMBP_VERSION);
 echo sprintf(I_WELCOME, '<a href=' . PMBP_WEBSITE . '>' . PMBP_WEBSITE . '</a>');

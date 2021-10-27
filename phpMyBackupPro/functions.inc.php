@@ -288,10 +288,13 @@ function PMBP_print_export_form($dirs1=FALSE) {
     echo F_COMMENTS.":";
     echo "</td>\n</tr><tr>\n<td>\n";
     echo "<select name=\"db[]\" multiple=\"multiple\" size=\"10\">\n";
-    if (!$con=@mysql_connect($CONF['sql_host'],$CONF['sql_user'],$CONF['sql_passwd']));
 
     // find the availabe compression methods and set which are disabled and which is selected
-    if (!@function_exists("gzopen") || !@function_exists("gzcompress")) $disable_gzip=" disabled"; else $disable_gzip="";
+    if (!@function_exists("gzopen") || !@function_exists("gzcompress")) {
+        $disable_gzip = " disabled";
+    } else {
+        $disable_gzip = "";
+    }
 
     $last_dbs=explode("|",$PMBP_SYS_VAR['F_dbs']);
     if (count($db_list=PMBP_get_db_list())>0) {
@@ -313,7 +316,11 @@ function PMBP_print_export_form($dirs1=FALSE) {
     echo "<input type=\"checkbox\" name=\"tables\" ".$checked.">".F_EX_TABLES." | ";
     $checked = $PMBP_SYS_VAR['F_data'] ? "checked" : "";
     echo '<input type="checkbox" name="data" '.$checked.">".F_EX_DATA." | ";
-    if($PMBP_SYS_VAR['F_drop']) $checked="checked"; else $checked="";    
+    if($PMBP_SYS_VAR['F_drop']) {
+        $checked = "checked";
+    } else {
+        $checked = "";
+    }
     echo '<input type="checkbox" name="drop" '.$checked.">".F_EX_DROP." | ";
 
     $comp_off=$comp_gzip=$comp_zip="";
@@ -367,13 +374,18 @@ function PMBP_save_export_settings() {
     global $PMBP_SYS_VAR;
 
     // check if any settings have changed
-    if ($PMBP_SYS_VAR['F_data']!=$_POST['data'] OR $PMBP_SYS_VAR['F_tables']!=$_POST['tables'] OR
-    $PMBP_SYS_VAR['F_compression']!=$_POST['zip'] OR $PMBP_SYS_VAR['F_drop']!=$_POST['drop'] OR $PMBP_SYS_VAR['F_packed']!=$_POST['packed']) {            
-        $PMBP_SYS_VAR['F_data']=$_POST['data'];
-        $PMBP_SYS_VAR['F_tables']=$_POST['tables'];
-        $PMBP_SYS_VAR['F_compression']=$_POST['zip'];
-        $PMBP_SYS_VAR['F_drop']=$_POST['drop'];
-        $PMBP_SYS_VAR['F_packed']=$_POST['packed'];
+    if (
+        $PMBP_SYS_VAR['F_data'] != $_POST['data']
+        or $PMBP_SYS_VAR['F_tables'] != $_POST['tables']
+        or $PMBP_SYS_VAR['F_compression'] != $_POST['zip']
+        or $PMBP_SYS_VAR['F_drop'] != $_POST['drop']
+        or $PMBP_SYS_VAR['F_packed'] != $_POST['packed']
+    ) {
+        $PMBP_SYS_VAR['F_data'] = $_POST['data'];
+        $PMBP_SYS_VAR['F_tables'] = $_POST['tables'];
+        $PMBP_SYS_VAR['F_compression'] = $_POST['zip'];
+        $PMBP_SYS_VAR['F_drop'] = $_POST['drop'];
+        $PMBP_SYS_VAR['F_packed'] = $_POST['packed'];
     }
 
     if (isset($_POST['db'])) {
@@ -441,13 +453,23 @@ function PMBP_set_select($form,$select,$link){
 
 // generates javascript PMBP_pop_up link
 function PMBP_pop_up($path,$link,$type,$title_attr=""){
-    return "<a href='javascript:popUp(\"".$path."\",\"".$type."\",false,\"\")' title=\"".$title_attr."\">".$link."</a>";
+    return sprintf(
+        '<a href=\'javascript:popUp("%s","%s",false,"")\' title="%s">%s</a>',
+        $path,
+        $type,
+        $title_attr,
+        $link
+    );
 }
 
 
 // generates event hanlders to change the border color in a td.list list
 function PMBP_change_color($color1,$color2){
-    return "onmouseout=\"changeColor(this, '".$color1."');\" onmouseover=\"changeColor(this, '".$color2."');\"";
+    return sprintf(
+        'onmouseout="changeColor(this, \'%s\');" onmouseover="changeColor(this, \'%s\');"',
+        $color1,
+        $color2
+    );
 }
 
 
@@ -457,8 +479,21 @@ function PMBP_confirm($text,$path,$link,$popupType=false){
     global $CONF;
     switch ($CONF['confirm']) {
         case 0:
-            if ($popupType) return "<a href='javascript:popUp(\"".$path."\",\"".$popupType."\",true,\"".$text."\")'>".$link."</a>";
-                else return "<a href='javascript:confirmClick(\"".$text."\",\"".$path."\")'>".$link."</a>";
+            if (!$popupType) {
+                return sprintf(
+                    '<a href=\'javascript:confirmClick("%s","%s")\'>%s</a>',
+                    $text,
+                    $path,
+                    $link
+                );
+            }
+            return sprintf(
+                '<a href=\'javascript:popUp("%s","%s",true,"%s")\'>%s</a>',
+                $path,
+                $popupType,
+                $text,
+                $link
+            );
         case 1:
             if ($popupType) {
                 if (strpos($path, "all") !== false || strpos($path, "ALL") !== false) {
@@ -503,6 +538,7 @@ function PMBP_confirm($text,$path,$link,$popupType=false){
             }
             return "<a href=\"".$path."\">".$link."</a>";
     }
+    return '';
 }
 
 
@@ -513,9 +549,11 @@ function PMBP_exec_sql($file,$con,$linespersession=false,$noFile=false) {
     $query="";
     $queries=0;
     $error="";
-    if (isset($_GET["totalqueries"])) $totalqueries=$_GET["totalqueries"]; else $totalqueries=0;
-    if (isset($_GET["start"])) $linenumber=$_GET["start"]; else $linenumber=$_GET['start']=0;
-    if (!$linespersession) $_GET['start']=1;
+    $totalqueries = isset($_GET["totalqueries"]) ? $_GET["totalqueries"] : 0;
+    $linenumber = isset($_GET["start"]) ? $_GET["start"] : ($_GET['start'] = 0);
+    if (!$linespersession) {
+        $_GET['start'] = 1;
+    }
     $inparents=false;
     $querylines=0;
 
@@ -534,7 +572,9 @@ function PMBP_exec_sql($file,$con,$linespersession=false,$noFile=false) {
     {
     	// increment $_GET['start'] when $linespersession was not set
     	// so all lines of $file will be exeuted at once
-    	if (!$linespersession) $_GET['start']++;
+    	if (!$linespersession) {
+            $_GET['start']++;
+        }
     	  
         // handle DOS and Mac encoded linebreaks
         $dumpline=preg_replace("@\r\n$@","\n",$dumpline);
@@ -561,7 +601,9 @@ function PMBP_exec_sql($file,$con,$linespersession=false,$noFile=false) {
         // count ' and \' in the dumpline to avoid query break within a text field ending by ;
         // please don't use double quotes ('"')to surround strings, it wont work
         $parents=substr_count($dumpline_deslashed,"'")-substr_count($dumpline_deslashed,"\\'");
-        if ($parents%2!=0) $inparents=!$inparents;
+        if ($parents%2!=0) {
+            $inparents = !$inparents;
+        }
 
         // add the line to query
         $query.=$dumpline;
@@ -578,12 +620,22 @@ function PMBP_exec_sql($file,$con,$linespersession=false,$noFile=false) {
         // execute query if end of query detected (; as last character) AND NOT in parents
         if (preg_match('@;$@',trim($dumpline)) && !$inparents) {
             if (!mysql_query(trim($query),$con)) {
-                $error=SQ_ERROR." ".($linenumber+1)."<br />".nl2br(htmlentities(trim($query)))."\n<br />".htmlentities(mysql_error());
+                $error= sprintf(
+                    "%s %s<br />%s\n<br />%s",
+                    SQ_ERROR,
+                    $linenumber + 1,
+                    nl2br(htmlentities(trim($query))),
+                    htmlentities(mysql_error()
+                    )
+                );
                 break;
             }
             
-            if (strtolower(substr(trim($query),0,6))=="insert") $tableQueries++;
-				elseif (strtolower(substr(trim($query),0,12))=="create table") $insertQueries++; 
+            if (strtolower(substr(trim($query),0,6)) === "insert") {
+                $tableQueries++;
+            } elseif (strtolower(substr(trim($query),0,12)) === "create table") {
+                $insertQueries++;
+            }
             $totalqueries++;
             $queries++;
             $query="";
@@ -591,7 +643,14 @@ function PMBP_exec_sql($file,$con,$linespersession=false,$noFile=false) {
         }            
         $linenumber++;
     }
-    return array("queries"=>$queries,"totalqueries"=>$totalqueries,"linenumber"=>$linenumber,"error"=>$error,"tableQueries"=>$tableQueries,"insertQueries"=>$insertQueries);
+    return array(
+        "queries"=>$queries,
+        "totalqueries"=>$totalqueries,
+        "linenumber"=>$linenumber,
+        "error"=>$error,
+        "tableQueries"=>$tableQueries,
+        "insertQueries"=>$insertQueries
+    );
 }
 
 
@@ -604,196 +663,209 @@ function PMBP_dump($db,$tables,$data,$drop,$zip,$comment) {
     $error=FALSE;
     
     // set max string size before writing to file
-    if (@ini_get("memory_limit")) $max_size=900000*ini_get("memory_limit");
-        else $max_size=$PMBP_SYS_VAR['memory_limit'];
+    if (@ini_get("memory_limit")) {
+        $max_size = 900000 * ini_get("memory_limit");
+    } else {
+        $max_size = $PMBP_SYS_VAR['memory_limit'];
+    }
     
     // set backupfile name
     $time=time();
-    if ($zip=="gzip") $backupfile=$db.".".$time.".sql.gz";
-        else $backupfile=$db.".".$time.".sql";
-    $backupfile=PMBP_EXPORT_DIR.$backupfile;
-                    
-    if ($con=@mysql_connect($CONF['sql_host'],$CONF['sql_user'],$CONF['sql_passwd'])) {
-    $connection_method='SET CHARACTER SET';
-    $charset='utf8';
-//    @mysql_query("{$connection_method} {$charset}");
-	 if (function_exists('mysql_set_charset'))
-	 {
-	     mysql_set_charset($charset);
-	 }
+    $backupfile = sprintf('%s%s.%s.sql', PMBP_EXPORT_DIR, $db, $time);
+    if($zip === 'gzip') {
+        $backupfile .= '.gz';
+    }
 
-        //create comment
-        $out="# MySQL dump of database '".$db."' on host '".$CONF['sql_host']."'\n";
-        $out.="# backup date and time: ".strftime($CONF['date'],$time)."\n";
-        $out.="# built by phpMyBackupPro ".PMBP_VERSION."\n";
-        $out.="# ".PMBP_WEBSITE."\n\n";
-
-        // write users comment
-        if ($comment) {
-            $out.="# comment:\n";
-            $comment=preg_replace("'\n'","\n# ","# ".$comment);
-            foreach(explode("\n",$comment) as $line) $out.=$line."\n";
-            $out.="\n";
-        }
-
-        // print "use database" if more than one databas is available
-        if (count(PMBP_get_db_list())>1) {
-            $out.="CREATE DATABASE IF NOT EXISTS `".$db."`;\n\n";
-            $out.="USE `".$db."`;\n";
-        }
-        
-        // select db
-        @mysql_select_db($db);        
-        
-        // get auto_increment values and names of all tables
-        $res=mysql_query("show table status");
-        $all_tables=array();
-        while($row=mysql_fetch_array($res)) $all_tables[]=$row;
-
-        // get table structures
-        foreach ($all_tables as $table) {
-            $res1=mysql_query("SHOW CREATE TABLE `".$table['Name']."`");
-            $tmp=mysql_fetch_array($res1);
-            $table_sql[$table['Name']]=$tmp["Create Table"];
-        }
-
-        // find foreign keys
-        $fks=array();
-        if (isset($table_sql)) {
-            foreach($table_sql as $tablenme=>$table) {
-                $tmp_table=$table;
-                // save all tables, needed for creating this table in $fks
-                while (($ref_pos=strpos($tmp_table," REFERENCES "))>0) {
-                    $tmp_table=substr($tmp_table,$ref_pos+12);
-                    $ref_pos=strpos($tmp_table,"(");
-                    $fks[$tablenme][]=substr($tmp_table,0,$ref_pos);
-                }
-            }
-        }
-
-        // order $all_tables and check for ring constraints
-        $all_tables_copy = $all_tables;
-        $all_tables=PMBP_order_sql_tables($all_tables,$fks);
-		$ring_contraints = false;
-
-		// ring constraints found
-        if ($all_tables===false) {
-        	$ring_contraints = true;
-        	$all_tables = $all_tables_copy;
-        	
-        	$out.="\n# ring constraints workaround\n";
-        	$out.="SET FOREIGN_KEY_CHECKS=0;\n"; 
-			$out.="SET AUTOCOMMIT=0;\n";
-			$out.="START TRANSACTION;\n"; 
-        }
-        unset($all_tables_copy);
-
-        // as long as no error occurred
-        if (!$error) {
-            foreach ($all_tables as $row) {
-                $tablename=$row['Name'];
-                $auto_incr[$tablename]=$row['Auto_increment'];
-
-                // don't backup tables in $PMBP_SYS_VAR['except_tables']
-                if (in_array($tablename,explode(",",$PMBP_SYS_VAR['except_tables'])))
-                    continue;
-
-                $out.="\n\n";
-                // export tables
-                if ($tables) {
-                    $out.="### structure of table `".$tablename."` ###\n\n";
-                    if ($drop) $out.="DROP TABLE IF EXISTS `".$tablename."`;\n\n";
-                    $out.=$table_sql[$tablename];
-
-                    // add auto_increment value
-                    if ($auto_incr[$tablename]) {
-                        $out.=" AUTO_INCREMENT=".$auto_incr[$tablename];
-                    }
-                    $out.=";";
-                }
-                $out.="\n\n\n";
-
-                // export data
-                if ($data && !$error) {
-                    $out.="### data of table `".$tablename."` ###\n\n";
-
-                    // check if field types are NULL or NOT NULL
-                    $res3=mysql_query("show columns from `".$tablename."`");
-
-                    $res2=mysql_query("select * from `".$tablename."`");
-                    for ($j=0;$j<mysql_num_rows($res2);$j++){
-                        $out .= "insert into `".$tablename."` values (";
-                        $row2=mysql_fetch_row($res2);
-                        // run through each field
-                        for ($k=0;$k<$nf=mysql_num_fields($res2);$k++) {
-                            // identify null values and save them as null instead of ''
-                            if (is_null($row2[$k])) $out .="null"; else $out .="'".mysql_escape_string($row2[$k])."'";
-                            if ($k<($nf-1)) $out .=", ";
-                        }
-                        $out .=");\n";
-
-                        // if saving is successful, then empty $out, else set error flag
-                        if (strlen($out)>$max_size) {
-                            if ($out=PMBP_save_to_file($backupfile,$zip,$out,"a")) $out=""; else $error=TRUE;
-                        }
-                    }
-
-                // an error occurred! Try to delete file and return error status
-                } elseif ($error) {
-                    @unlink("./".PMBP_EXPORT_DIR.$backupfile);
-                    return FALSE;
-                }
-
-                // if saving is successful, then empty $out, else set error flag
-                if (strlen($out)>$max_size) {
-                    if ($out=PMBP_save_to_file($backupfile,$zip,$out,"a")) $out=""; else $error=TRUE;
-                }
-            }
-            
-        // an error occurred! Try to delete file and return error status
-        } else {
-            @unlink("./".$backupfile);
-            return FALSE;
-        }
-        
-        // if db contained ring constraints        
-		if ($ring_contraints) {
-			$out.="\n\n# ring constraints workaround\n";
-			$out .= "SET FOREIGN_KEY_CHECKS=1;\n"; 
-			$out .= "COMMIT;\n"; 
-		}
-
-		// save to file
-        if ($backupfile=PMBP_save_to_file($backupfile,$zip,$out,"a")) {
-            if ($zip!="zip") return basename($backupfile);
-        } else {
-            @unlink("./".$backupfile);
-            return FALSE;
-        }
-        
-        // create zip file in file system
-    	include_once("pclzip.lib.php");
-    	$pclzip = new PclZip($backupfile.".zip");
-    	$pclzip->create($backupfile,PCLZIP_OPT_REMOVE_PATH,PMBP_EXPORT_DIR);    	
-
-        // remove temporary plain text backup file used for zip compression
-        @unlink(substr($backupfile,0,strlen($backupfile)));
-         
-        if ($pclzip->error_code==0) {
-        	return basename($backupfile).".zip";
-        } else {
-        	// print pclzip error message
-	        echo "<div class=\"red\">pclzip: ".$pclzip->error_string."</div>";
-
-	        // remove temporary plain text backup file 
-	    	@unlink(substr($backupfile,0,strlen($backupfile)-4));
-	        @unlink("./".$backupfile);
-	        return FALSE;
-        }
-
-    } else {
+    if (!@mysql_connect($CONF['sql_host'], $CONF['sql_user'], $CONF['sql_passwd'])) {
         return "DB_ERROR";
     }
+
+    $connection_method = 'SET CHARACTER SET';
+    $charset = 'utf8';
+    // @mysql_query("{$connection_method} {$charset}");
+    if (function_exists('mysql_set_charset')) {
+        mysql_set_charset($charset);
+    }
+
+    //create comment
+    $out = "# MySQL dump of database '" . $db . "' on host '" . $CONF['sql_host'] . "'\n";
+    $out .= "# backup date and time: " . strftime($CONF['date'], $time) . "\n";
+    $out .= "# built by phpMyBackupPro " . PMBP_VERSION . "\n";
+    $out .= "# " . PMBP_WEBSITE . "\n\n";
+
+    // write users comment
+    if ($comment) {
+        $out .= "# comment:\n";
+        $comment = preg_replace("'\n'", "\n# ", "# " . $comment);
+        foreach (explode("\n", $comment) as $line) $out .= $line . "\n";
+        $out .= "\n";
+    }
+
+    // print "use database" if more than one databas is available
+    if (count(PMBP_get_db_list()) > 1) {
+        $out .= "CREATE DATABASE IF NOT EXISTS `" . $db . "`;\n\n";
+        $out .= "USE `" . $db . "`;\n";
+    }
+
+    // select db
+    @mysql_select_db($db);
+
+    // get auto_increment values and names of all tables
+    $res = mysql_query("show table status");
+    $all_tables = array();
+    while ($row = mysql_fetch_array($res)) $all_tables[] = $row;
+
+    // get table structures
+    foreach ($all_tables as $table) {
+        $res1 = mysql_query("SHOW CREATE TABLE `" . $table['Name'] . "`");
+        $tmp = mysql_fetch_array($res1);
+        $table_sql[$table['Name']] = $tmp["Create Table"];
+    }
+
+    // find foreign keys
+    $fks = array();
+    if (isset($table_sql)) {
+        foreach ($table_sql as $tablenme => $table) {
+            $tmp_table = $table;
+            // save all tables, needed for creating this table in $fks
+            while (($ref_pos = strpos($tmp_table, " REFERENCES ")) > 0) {
+                $tmp_table = substr($tmp_table, $ref_pos + 12);
+                $ref_pos = strpos($tmp_table, "(");
+                $fks[$tablenme][] = substr($tmp_table, 0, $ref_pos);
+            }
+        }
+    }
+
+    // order $all_tables and check for ring constraints
+    $all_tables_copy = $all_tables;
+    $all_tables = PMBP_order_sql_tables($all_tables, $fks);
+    $ring_contraints = false;
+
+    // ring constraints found
+    if ($all_tables === false) {
+        $ring_contraints = true;
+        $all_tables = $all_tables_copy;
+
+        $out .= "\n# ring constraints workaround\n";
+        $out .= "SET FOREIGN_KEY_CHECKS=0;\n";
+        $out .= "SET AUTOCOMMIT=0;\n";
+        $out .= "START TRANSACTION;\n";
+    }
+    unset($all_tables_copy);
+
+    // as long as no error occurred
+    if (!$error) {
+        foreach ($all_tables as $row) {
+            $tablename = $row['Name'];
+            $auto_incr[$tablename] = $row['Auto_increment'];
+
+            // don't backup tables in $PMBP_SYS_VAR['except_tables']
+            if (in_array($tablename, explode(",", $PMBP_SYS_VAR['except_tables'])))
+                continue;
+
+            $out .= "\n\n";
+            // export tables
+            if ($tables) {
+                $out .= "### structure of table `" . $tablename . "` ###\n\n";
+                if ($drop) {
+                    $out .= "DROP TABLE IF EXISTS `" . $tablename . "`;\n\n";
+                }
+                $out .= $table_sql[$tablename];
+
+                // add auto_increment value
+                if ($auto_incr[$tablename]) {
+                    $out .= " AUTO_INCREMENT=" . $auto_incr[$tablename];
+                }
+                $out .= ";";
+            }
+            $out .= "\n\n\n";
+
+            // export data
+            if ($data && !$error) {
+                $out .= "### data of table `" . $tablename . "` ###\n\n";
+
+                // check if field types are NULL or NOT NULL
+                $res3 = mysql_query("show columns from `" . $tablename . "`");
+
+                $res2 = mysql_query("select * from `" . $tablename . "`");
+                for ($j = 0; $j < mysql_num_rows($res2); $j++) {
+                    $out .= "insert into `" . $tablename . "` values (";
+                    $row2 = mysql_fetch_row($res2);
+                    // run through each field
+                    for ($k = 0; $k < $nf = mysql_num_fields($res2); $k++) {
+                        // identify null values and save them as null instead of ''
+                        if (is_null($row2[$k])) {
+                            $out .= "null";
+                        } else {
+                            $out .= "'" . mysql_escape_string($row2[$k]) . "'";
+                        }
+                        if ($k < ($nf - 1)) {
+                            $out .= ", ";
+                        }
+                    }
+                    $out .= ");\n";
+
+                    // if saving is successful, then empty $out, else set error flag
+                    if (strlen($out) > $max_size) {
+                        if ($out = PMBP_save_to_file($backupfile, $zip, $out, "a")) $out = ""; else $error = TRUE;
+                    }
+                }
+
+                // an error occurred! Try to delete file and return error status
+            } elseif ($error) {
+                @unlink("./" . PMBP_EXPORT_DIR . $backupfile);
+                return FALSE;
+            }
+
+            // if saving is successful, then empty $out, else set error flag
+            if (strlen($out) > $max_size) {
+                if ($out = PMBP_save_to_file($backupfile, $zip, $out, "a")) {
+                    $out = "";
+                } else {
+                    $error = TRUE;
+                }
+            }
+        }
+
+        // an error occurred! Try to delete file and return error status
+    } else {
+        @unlink("./" . $backupfile);
+        return FALSE;
+    }
+
+    // if db contained ring constraints
+    if ($ring_contraints) {
+        $out .= "\n\n# ring constraints workaround\n";
+        $out .= "SET FOREIGN_KEY_CHECKS=1;\n";
+        $out .= "COMMIT;\n";
+    }
+
+    // save to file
+    if ($backupfile = PMBP_save_to_file($backupfile, $zip, $out, "a")) {
+        if ($zip !== "zip") return basename($backupfile);
+    } else {
+        @unlink("./" . $backupfile);
+        return FALSE;
+    }
+
+    // create zip file in file system
+    include_once("pclzip.lib.php");
+    $pclzip = new PclZip($backupfile . ".zip");
+    $pclzip->create($backupfile, PCLZIP_OPT_REMOVE_PATH, PMBP_EXPORT_DIR);
+
+    // remove temporary plain text backup file used for zip compression
+    @unlink(substr($backupfile, 0, strlen($backupfile)));
+
+    if ($pclzip->error_code != 0) {
+        // print pclzip error message
+        echo "<div class=\"red\">pclzip: " . $pclzip->error_string . "</div>";
+
+        // remove temporary plain text backup file
+        @unlink(substr($backupfile, 0, strlen($backupfile) - 4));
+        @unlink("./" . $backupfile);
+        return FALSE;
+    }
+    return basename($backupfile) . ".zip";
 }
 
 
@@ -843,25 +915,23 @@ function PMBP_order_sql_tables($tables,$fks) {
 // returns backup file name if name has changed (zip), else TRUE. If saving failed, return value is FALSE
 function PMBP_save_to_file($backupfile,$zip,&$fileData,$mode) {
 	// save to a gzip file
-    if ($zip=="gzip") {
-        if ($zp=@gzopen("./".$backupfile,$mode."9")) {
-            @gzwrite($zp,$fileData);
-            @gzclose($zp);            
-            return $backupfile;
-        } else {
+    if ($zip === "gzip") {
+        $zp = @gzopen("./" . $backupfile, $mode . "9");
+        if (!$zp) {
             return FALSE;
         }
+        @gzwrite($zp, $fileData);
+        @gzclose($zp);
+        return $backupfile;
 
-    // save to a plain text file (uncompressed)
-    } else {
-        if ($zp=@fopen("./".$backupfile,$mode)) {
-            @fwrite($zp,$fileData);
-            @fclose($zp);
-            return $backupfile;
-        } else {
-            return FALSE;
-        }
+        // save to a plain text file (uncompressed)
     }
+    if (!($zp = @fopen("./" . $backupfile, $mode))) {
+        return FALSE;
+    }
+    @fwrite($zp, $fileData);
+    @fclose($zp);
+    return $backupfile;
 }
 
 
@@ -878,10 +948,17 @@ function PMBP_save_global_conf($global_conf_path="") {
     if (is_array($CONF)) {
         foreach($CONF as $item=>$conf) {
             // don't save multi server settings to gloabl_conf.php
-            if ($item=="sql_host_s" || $item=="sql_user_s" || $item=="sql_passwd_s" || $item=="sql_db_s") continue;
+            if ($item=="sql_host_s" || $item=="sql_user_s" || $item=="sql_passwd_s" || $item=="sql_db_s") {
+                continue;
+            }
             
             // don't store sql data in mu mode
-            if ($_SESSION['multi_user_mode'] && ($item=="sql_passwd" || $item=="sql_host" || $item=="sql_user" || $item=="sql_db")) continue;
+            if (
+                $_SESSION['multi_user_mode']
+                && ($item=="sql_passwd" || $item=="sql_host" || $item=="sql_user" || $item=="sql_db")
+            ) {
+                continue;
+            }
     
             // update $_SESSION['sql_host_org'] etc. if new sql data were entered on the config page
             if (basename($_SERVER['SCRIPT_NAME'])=="config.php") {
@@ -909,16 +986,22 @@ function PMBP_save_global_conf($global_conf_path="") {
 
     // unset 'last_scheduled_' values in sys vars which no longer belong to an account
     foreach($PMBP_SYS_VAR as $key=>$value) {
-        if (substr($key,0,15)=="last_scheduled_" && substr($key,15)>=count($CONF['sql_host_s'])) unset($PMBP_SYS_VAR[$key]);
+        if (substr($key,0,15)=="last_scheduled_" && substr($key,15)>=count($CONF['sql_host_s'])) {
+            unset($PMBP_SYS_VAR[$key]);
+        }
     }
     
     // add system variables    
     $file.="\n";
-    foreach($PMBP_SYS_VAR as $item=>$sys_var) $file.="\$PMBP_SYS_VAR['".$item."']=\"".$sys_var."\";\n";
+    foreach($PMBP_SYS_VAR as $item=>$sys_var) {
+        $file .= "\$PMBP_SYS_VAR['" . $item . "']=\"" . $sys_var . "\";\n";
+    }
     
     $file.="\n?>";
         
-    if (!$global_conf_path) $global_conf_path=PMBP_GLOBAL_CONF;
+    if (!$global_conf_path) {
+        $global_conf_path = PMBP_GLOBAL_CONF;
+    }
     return PMBP_save_to_file($global_conf_path,FALSE,$file,"w");
 }
 
@@ -927,40 +1010,56 @@ function PMBP_save_global_conf($global_conf_path="") {
 function PMBP_ftp_store($files) {
     global $CONF;
     global $PMBP_SYS_VAR;
-    $out=FALSE;
-    
+
     // try to connect to server using username and passwort
     if (!$CONF['ftp_server']) {
-        $out.="<div class=\"red\">".C_WRONG_FTP."!</div>";
-    } elseif (!$conn_id=@ftp_connect($CONF['ftp_server'],$CONF['ftp_port'],$PMBP_SYS_VAR['ftp_timeout'])) {
-        $out.="<div class=\"red\">".F_FTP_1." '".$CONF['ftp_server']."'!</div>";
+        return "<div class=\"red\">".C_WRONG_FTP."!</div>";
+    }
+
+    if (!$conn_id=@ftp_connect($CONF['ftp_server'],$CONF['ftp_port'],$PMBP_SYS_VAR['ftp_timeout'])) {
+        return "<div class=\"red\">".F_FTP_1." '".$CONF['ftp_server']."'!</div>";
+    }
+
+    if (!$login_result=@ftp_login($conn_id,$CONF['ftp_user'],$CONF['ftp_passwd'])) {
+        return "<div class=\"red\">".F_FTP_2." '".$CONF['ftp_user']."'.</div>";
+    }
+
+    // succesfully connected
+    if ($CONF['ftp_pasv']) {
+        ftp_pasv($conn_id, TRUE);
     } else {
-        if (!$login_result=@ftp_login($conn_id,$CONF['ftp_user'],$CONF['ftp_passwd'])) {
-            $out.="<div class=\"red\">".F_FTP_2." '".$CONF['ftp_user']."'.</div>";
-        } else {
+        ftp_pasv($conn_id, FALSE);
+    }
+    $path = $CONF['ftp_path'] ? $CONF['ftp_path'] : ".";
 
-            // succesfully connected
-            if ($CONF['ftp_pasv']) ftp_pasv($conn_id,TRUE); else ftp_pasv($conn_id,FALSE);
-            if (!$CONF['ftp_path']) $path="."; else $path=$CONF['ftp_path'];
+    // upload the files
+    $out='';
+    foreach($files as $filename) {
+        $source_file="./".$filename;
+        if (substr($filename,0,strlen(PMBP_EXPORT_DIR))==PMBP_EXPORT_DIR) {
+            $filename = substr($filename, strlen(PMBP_EXPORT_DIR));
+        }
+        $dest_file=$path."/".$filename;
 
-            // upload the files
-            foreach($files as $filename) {
-            	$source_file="./".$filename;
-            	if (substr($filename,0,strlen(PMBP_EXPORT_DIR))==PMBP_EXPORT_DIR) $filename = substr($filename,strlen(PMBP_EXPORT_DIR));
-                $dest_file=$path."/".$filename;
-
-                // try three times to upload
-                $check=FALSE;
-                for($i=0;$i<3;$i++)
-                    if (!$check) $check=@ftp_put($conn_id,$dest_file,$source_file,FTP_BINARY);
-                if (!$check) $out.="<div class=\"red\">".F_FTP_3.": '".$source_file."' -> '".$dest_file."'.</div>\n";
-                    else $out.="<div class=\"green\">".F_FTP_4." '".$dest_file."'.</div>\n";
+        // try three times to upload
+        $check=FALSE;
+        for($i=0;$i<3;$i++) {
+            if (!$check) {
+                $check = @ftp_put($conn_id, $dest_file, $source_file, FTP_BINARY);
             }
-
-            // close the FTP connection
-            if (@function_exists("ftp_close")) @ftp_close($conn_id);
+        }
+        if (!$check) {
+            $out .= "<div class=\"red\">" . F_FTP_3 . ": '" . $source_file . "' -> '" . $dest_file . "'.</div>\n";
+        } else {
+            $out .= "<div class=\"green\">" . F_FTP_4 . " '" . $dest_file . "'.</div>\n";
         }
     }
+
+    // close the FTP connection
+    if (@function_exists("ftp_close")) {
+        @ftp_close($conn_id);
+    }
+
     return $out;
 }
 
@@ -968,7 +1067,6 @@ function PMBP_ftp_store($files) {
 // send email with $attachments backup files to $email email using $sitename for sender and subject
 function PMBP_email_store($attachments,$backup_info) {
     global $CONF;
-    $out=FALSE;
     $lb="\n";
     $all_emails=explode(",",$CONF['email']);
  
@@ -976,9 +1074,13 @@ function PMBP_email_store($attachments,$backup_info) {
  
  	// send database backups
  	if (is_array($backup_info)) {
-	    if ($backup_info['comp']=="gzip") $mailtext.=INF_COMP.": gzip".$lb;
-	        elseif ($backup_info['comp']=="zip") $mailtext.=INF_COMP.": zip".$lb;
-	            else $mailtext.=INF_COMP.": ".F_NO.$lb;
+        if ($backup_info['comp'] === "gzip") {
+            $mailtext .= INF_COMP . ": gzip" . $lb;
+        } elseif ($backup_info['comp'] === "zip") {
+            $mailtext .= INF_COMP . ": zip" . $lb;
+        } else {
+            $mailtext .= INF_COMP . ": " . F_NO . $lb;
+        }
 	    if ($backup_info['drop']) $mailtext.=INF_DROP.": ".F_YES.$lb; else $mailtext.=INF_DROP.": ".F_NO.$lb;
 	    if ($backup_info['tables']) $mailtext.=INF_TABLES.": ".F_YES.$lb; else $mailtext.=INF_TABLES.": ".F_NO.$lb;
 	    if ($backup_info['data']) $mailtext.=INF_DATA.": ".F_YES.$lb; else $mailtext.=INF_DATA.": ".F_NO.$lb;
@@ -1003,12 +1105,13 @@ function PMBP_email_store($attachments,$backup_info) {
     $headers="From: phpMyBackupPro on ".$CONF['sitename']." <".$all_emails[0].">".$lb."Mime-Version: 1.0".$lb."Content-Type: multipart/mixed;".$lb."\tboundary=\"".$boundary."\"";
 
     // send to all every addresses
+    $out='';
     foreach($all_emails as $email) {
         // verify email
-        if (!preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/',$email)) {
-            $out.="<div class=\"red\">".F_MAIL_1."</div>\n";
+        if (preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/',$email)) {
             continue;
         }
+        $out .= "<div class=\"red\">" . F_MAIL_1 . "</div>\n";
     }
     
     // create subject
@@ -1022,9 +1125,12 @@ function PMBP_email_store($attachments,$backup_info) {
     $subject = mb_encode_mimeheader($subject, BD_CHARSET_EMAIL, "B");
 
     // send mail
-    if (!@mail($CONF['email'],$subject,$encoded['body'],$headers)) $out.="<div class=\"red\">".F_MAIL_5.".</div>\n";
-        else $out.="<div class=\"green\">".F_MAIL_6." ".$CONF['email'].".</div>\n";
-    
+    if (!@mail($CONF['email'],$subject,$encoded['body'],$headers)) {
+        $out .= "<div class=\"red\">" . F_MAIL_5 . ".</div>\n";
+    } else {
+        $out .= "<div class=\"green\">" . F_MAIL_6 . " " . $CONF['email'] . ".</div>\n";
+    }
+
     return $out;
 }
 
@@ -1038,14 +1144,18 @@ function PMBP_get_backup_files() {
     $handle=@opendir("./".PMBP_EXPORT_DIR);
     $remove_time=time()-($CONF['del_time']*86400);
     while ($file=@readdir($handle)) {
-        if ($file!="." && $file!=".." && preg_match("'\.sql|\.sql\.gz|\.sql\.zip'",$file)) {
-            
-            // don't delete if del_time is not set
-            if ($CONF['del_time']) {
-                if (PMBP_file_info("time",$file)<$remove_time) $delete_files[]=$file; else $all_files[]=$file;
-            } else {
-                $all_files[]=$file;
-            }
+        if ($file === "." || $file === ".." || !preg_match("'\.sql|\.sql\.gz|\.sql\.zip'", $file)) {
+            continue;
+        }
+        // don't delete if del_time is not set
+        if (!$CONF['del_time']) {
+            $all_files[] = $file;
+            continue;
+        }
+        if (PMBP_file_info("time", $file) < $remove_time) {
+            $delete_files[] = $file;
+        } else {
+            $all_files[] = $file;
         }
     }
 
@@ -1055,16 +1165,28 @@ function PMBP_get_backup_files() {
     // delete oldest backup files if there are to many for one db
     if (is_array($all_files)) {
         foreach($all_files as $file) {
-            if (!isset($counter[$db=PMBP_file_info("db","./".PMBP_EXPORT_DIR.$file)])) $counter[$db]=1; else $counter[$db]++;
-            if ($counter[$db]>$CONF['del_number']) $delete_files[]=$file; else $result_files[]=$file;
+            if (!isset($counter[$db=PMBP_file_info("db","./".PMBP_EXPORT_DIR.$file)])) {
+                $counter[$db] = 1;
+            } else {
+                $counter[$db]++;
+            }
+            if ($counter[$db]>$CONF['del_number']) {
+                $delete_files[] = $file;
+            } else {
+                $result_files[] = $file;
+            }
         }
     }
 
     // now delete the files
-    if ($delete_files) PMBP_delete_backup_files($delete_files);
+    if ($delete_files) {
+        PMBP_delete_backup_files($delete_files);
+    }
 
     // sort ascending
-    if (is_array($result_files)) sort($result_files);
+    if (is_array($result_files)) {
+        sort($result_files);
+    }
     return $result_files;
 }
 
@@ -1073,12 +1195,19 @@ function PMBP_get_backup_files() {
 function PMBP_delete_backup_files($files) {
     global $CONF;
     $out="";
-    if(!is_array($files)) $files=array($files);
-    foreach($files as $file) if (!@unlink("./".PMBP_EXPORT_DIR.$file))
-    	$out.="<div class=\"red\">".sprintf(F_DEL_FAILED,$file)."</div>";
+    if(!is_array($files)) {
+        $files = array($files);
+    }
+    foreach($files as $file) {
+        if (!@unlink("./" . PMBP_EXPORT_DIR . $file)) {
+            $out .= "<div class=\"red\">" . sprintf(F_DEL_FAILED, $file) . "</div>";
+        }
+    }
 
     // find and delete all old files from the ftp server
-    if ($CONF['ftp_use'] && $CONF['ftp_del']) $out.=PMBP_ftp_del($files);
+    if ($CONF['ftp_use'] && $CONF['ftp_del']) {
+        $out .= PMBP_ftp_del($files);
+    }
     return $out;
 }
 
@@ -1091,77 +1220,108 @@ function PMBP_ftp_del($delete_files=array()) {
 
     // try to connect to server using username and passwort
     if (!$CONF['ftp_server']) {
-        $out.="<div class=\"red\">".C_WRONG_FTP."</div>";
-    } elseif (!$conn_id=@ftp_connect($CONF['ftp_server'],$CONF['ftp_port'],$PMBP_SYS_VAR['ftp_timeout'])) {
-        $out.="<div class=\"red\">".F_FTP_1." '".$CONF['ftp_server']."'!</div>";
+        return "<div class=\"red\">".C_WRONG_FTP."</div>";
+    }
+
+    $conn_id=@ftp_connect($CONF['ftp_server'],$CONF['ftp_port'],$PMBP_SYS_VAR['ftp_timeout']);
+    if (!$conn_id) {
+        return "<div class=\"red\">".F_FTP_1." '".$CONF['ftp_server']."'!</div>";
+    }
+
+    if (!@ftp_login($conn_id,$CONF['ftp_user'],$CONF['ftp_passwd'])) {
+        return "<div class=\"red\">".F_FTP_2." '".$CONF['ftp_user']."'.</div>";
+    }
+
+    // succesfully connected
+    if ($CONF['ftp_pasv']) {
+        ftp_pasv($conn_id, TRUE);
     } else {
-        if (!$login_result=@ftp_login($conn_id,$CONF['ftp_user'],$CONF['ftp_passwd'])) {
-            $out.="<div class=\"red\">".F_FTP_2." '".$CONF['ftp_user']."'.</div>";
-        } else {
+        ftp_pasv($conn_id, FALSE);
+    }
 
-            // succesfully connected
-            if ($CONF['ftp_pasv']) ftp_pasv($conn_id,TRUE); else ftp_pasv($conn_id,FALSE);
+    // get files in remote directory
+    $path = $CONF['ftp_path'] ? $CONF['ftp_path'] : ".";
 
-            // get files in remote directory
-            if (!$CONF['ftp_path']) $path="."; else $path=$CONF['ftp_path'];
-            $remote_files=ftp_nlist($conn_id,$path);
+    $remote_files=ftp_nlist($conn_id,$path);
 
-            if (is_array($remote_files)) {
-                // separate filename
-                for($i=0;$i<count($remote_files);$i++)
-                    if (strrchr($remote_files[$i],"/")) $remote_files[$i]=substr(strrchr($remote_files[$i],"/"),1);
-                	
-                // don't delete if del_time is false                
-                if ($CONF['del_time']) {
-                	$remove_time=time()-($CONF['del_time']*86400);
-                    foreach($remote_files as $remote_file) {
-                        if (substr($remote_file,count($remote_file)-4)!=".sql" &&
-                        	substr($remote_file,count($remote_file)-7)!=".sql.gz" &&
-                        	substr($remote_file,count($remote_file)-8)!=".sql.zip") continue;
-                        if (PMBP_file_info("time",$remote_file)<$remove_time) {
-                        	$delete_files[]=$remote_file;
-                        } else {
-                        	$all_files[]=$remote_file;
-                        }
-                    }
+    if (is_array($remote_files)) {
+        // separate filename
+        foreach ($remote_files as $i => $iValue) {
+            if (!strrchr($iValue, "/")) {
+                continue;
+            }
+            $remote_files[$i] = substr(strrchr($iValue, "/"), 1);
+        }
+
+        // don't delete if del_time is false
+        if ($CONF['del_time']) {
+            $remove_time=time()-($CONF['del_time']*86400);
+            foreach($remote_files as $remote_file) {
+                if (substr($remote_file,count($remote_file)-4)!=".sql" &&
+                    substr($remote_file,count($remote_file)-7)!=".sql.gz" &&
+                    substr($remote_file,count($remote_file)-8)!=".sql.zip") {
+                    continue;
+                }
+                if (PMBP_file_info("time",$remote_file)<$remove_time) {
+                    $delete_files[]=$remote_file;
                 } else {
-                    $all_files=$remote_files;
+                    $all_files[]=$remote_file;
                 }
+            }
+        } else {
+            $all_files=$remote_files;
+        }
 
-                // sort descending
-                if (isset($all_files))
-                {
-	                if (is_array($all_files)) rsort($all_files);
+        // sort descending
+        if (isset($all_files))
+        {
+            if (is_array($all_files)) {
+                rsort($all_files);
+            }
 
-	                // delete oldest backup files if there are to many for one db
-	                if (is_array($all_files)) {
-	                    foreach($all_files as $file) {
-	                        $db=PMBP_file_info("db",$file);
-	                        if (!isset($counter[$db])) $counter[$db]=1; else $counter[$db]++;
-	                        if ($counter[$db]>$CONF['del_number']) $delete_files[]=$file; else $result_files[]=$file;
-	                    }
-	                }        
-                }
-                       
-                // delete the files in $delete_files
-                if (is_array($delete_files)) {
-                    foreach($delete_files as $filename) {
-                        $dest_file=$path."/".$filename;
-    
-                        // try three times to delete
-                        $check=FALSE;
-                        for($i=0;$i<3;$i++) {
-                            if (!$check) $check=@ftp_delete($conn_id,$dest_file);
-                        }
-                        if (!$check) $out.="<div class=\"red\">".sprintf(F_FTP_5."</div>\n",$dest_file);
-                            else $out.="<div class=\"green\">".sprintf(F_FTP_6."</div>\n",$dest_file);
+            // delete oldest backup files if there are to many for one db
+            if (is_array($all_files)) {
+                foreach($all_files as $file) {
+                    $db=PMBP_file_info("db",$file);
+                    if (!isset($counter[$db])) {
+                        $counter[$db] = 1;
+                    } else {
+                        $counter[$db]++;
+                    }
+                    if ($counter[$db]>$CONF['del_number']) {
+                        $delete_files[] = $file;
+                    } else {
+                        $result_files[] = $file;
                     }
                 }
             }
-
-            // close the FTP connection
-            if (@function_exists("ftp_close")) @ftp_close($conn_id);
         }
+
+        // delete the files in $delete_files
+        if (is_array($delete_files)) {
+            foreach($delete_files as $filename) {
+                $dest_file=$path."/".$filename;
+
+                // try three times to delete
+                $check=FALSE;
+                for($i=0;$i<3;$i++) {
+                    if ($check) {
+                        break;
+                    }
+                    $check = @ftp_delete($conn_id, $dest_file);
+                }
+                if (!$check) {
+                    $out .= '<div class="red">' . sprintf(F_FTP_5 . "</div>\n", $dest_file);
+                } else {
+                    $out .= '<div class="green">' . sprintf(F_FTP_6 . "</div>\n", $dest_file);
+                }
+            }
+        }
+    }
+
+    // close the FTP connection
+    if (@function_exists("ftp_close")) {
+        @ftp_close($conn_id);
     }
     return $out;
 }
@@ -1433,97 +1593,120 @@ function PMBP_get_files($dir) {
 function PMBP_save_FTP($files, $packed=false) {
     global $CONF;
     global $PMBP_SYS_VAR;
-    $out=FALSE;
 
     // try to connect to server using username and passwort
     if (!$CONF['ftp_server']) {
-        $out.="<div class=\"red\">".C_WRONG_FTP."</div>";
-    } elseif (!$conn_id=@ftp_connect($CONF['ftp_server'],$CONF['ftp_port'],$PMBP_SYS_VAR['ftp_timeout'])) {
-        $out.="<div class=\"red\">".F_FTP_1." '".$CONF['ftp_server']."'!</div>";
+        return "<div class=\"red\">".C_WRONG_FTP."</div>";
+    }
+
+    $conn_id = @ftp_connect($CONF['ftp_server'],$CONF['ftp_port'],$PMBP_SYS_VAR['ftp_timeout']);
+    if (!$conn_id) {
+        return "<div class=\"red\">".F_FTP_1." '".$CONF['ftp_server']."'!</div>";
+    }
+
+    if (!$login_result=@ftp_login($conn_id,$CONF['ftp_user'],$CONF['ftp_passwd'])) {
+        return "<div class=\"red\">".F_FTP_2." '".$CONF['ftp_user']."'.</div>";
+    }
+
+    // succesfully connected -> set passive and change to the right path
+    if ($CONF['ftp_pasv']) {
+        ftp_pasv($conn_id, TRUE);
     } else {
-        if (!$login_result=@ftp_login($conn_id,$CONF['ftp_user'],$CONF['ftp_passwd'])) {
-            $out.="<div class=\"red\">".F_FTP_2." '".$CONF['ftp_user']."'.</div>";
-        } else {
-        	
-            // succesfully connected -> set passive and change to the right path
-            if ($CONF['ftp_pasv']) ftp_pasv($conn_id,TRUE); else ftp_pasv($conn_id,FALSE);
-            if (!$CONF['ftp_path']) $path="."; else $path=$CONF['ftp_path'];
-            @ftp_chdir($conn_id,$path);            
-            
-			// backup as one ZIP file			
-            if ($packed) {
+        ftp_pasv($conn_id, FALSE);
+    }
+    if (!$CONF['ftp_path']) {
+        $path = ".";
+    } else {
+        $path = $CONF['ftp_path'];
+    }
+    @ftp_chdir($conn_id,$path);
 
-				include_once("pclzip.lib.php");
-	            $filename=$CONF['sitename'].".".time().".zip";
-	            $pclzip = new Pclzip(PMBP_EXPORT_DIR.$filename);
-				$pclzip->create($files);
-	
-	            // try three times to upload zip files
-	            $check=FALSE;
-	            for($i=0;$i<3;$i++) {
-	            	if (!$check) $check=ftp_put($conn_id,$filename,PMBP_EXPORT_DIR.$filename,FTP_BINARY);
-	            }	            
-	            if ($check) {
-	            	// adjust file permissions on ftp server
-	            	//ftp_chmod($conn_id,substr(sprintf('%o', fileperms(PMBP_EXPORT_DIR.$filename)), -4),$filename);
-	            	$out.="<div class=\"green\">".F_FTP_4." '".$filename."'.</div>\n";
-	            } else {
-	            	$out.="<div class=\"red\">".F_FTP_3.".</div>\n";
-	            }
-				@unlink(PMBP_EXPORT_DIR.$filename);
-			
-			// backup each file
-            } else {            
-	            // create all missing folders
-	            foreach($files as $filepath) {
-	                if ($filepath=trim($filepath)) {
-	                    $folders=explode("/",$filepath);
-	                    $filename=array_pop($folders);
-	                    $deep=0;
-	                    $all_folders="";
-	                    $all_folders_local="";
-	                    foreach($folders as $folder) {
-	                    	$all_folders_local.=$folder."/";
-	                        if ($folder != "." && $folder != "..") {
-	                            if (!@ftp_chdir($conn_id,$folder)) {
-	                                @ftp_mkdir($conn_id,$folder);
-	                                @ftp_chdir($conn_id,$folder);
-	                            }
-								// adjust directory permissions
-								//ftp_chmod($conn_id,substr(sprintf('%o', fileperms("../".$folder)), -4),"../".$folder);
-	                            $all_folders.=$folder."/";
-	                            $deep++;
-	                        }
-	                    }
+    // backup as one ZIP file
+    if ($packed) {
 
-	                    // change back to $path
-	                    $rel_path="";
-	                    for ($i=0;$i<$deep;$i++) $rel_path.="../";
-	                    @ftp_chdir($conn_id,$rel_path);
+        include_once("pclzip.lib.php");
+        $filename=$CONF['sitename'].".".time().".zip";
+        $pclzip = new Pclzip(PMBP_EXPORT_DIR.$filename);
+        $pclzip->create($files);
 
-	                    // define the source and destination pathes
-	                    $dest_file=$all_folders.$filename;
-	                    $source_file="./".$filepath;
-	
-	                    // try three times to upload
-	                    $check=FALSE;
-
-	                    for($i=0;$i<3;$i++) if (!$check) $check=@ftp_put($conn_id,$dest_file,$source_file,FTP_BINARY);
-	                    if ($check) {
-	                    	// adjust file permissions on ftp server
-	            			//ftp_chmod($conn_id,substr(sprintf('%o', fileperms($source_file)), -4),$dest_file);
-	                    	$out.="<div class=\"green\">".F_FTP_4." '".$dest_file."'.</div>\n";
-	                    } else {
-							$out.="<div class=\"red\">".F_FTP_3.": '".$source_file."' -> '".$dest_file."'.</div>\n";
-	                    }
-	                }
-	            }
-
+        // try three times to upload zip files
+        $check=FALSE;
+        for($i=0;$i<3;$i++) {
+            if (!$check) {
+                $check = ftp_put($conn_id, $filename, PMBP_EXPORT_DIR . $filename, FTP_BINARY);
             }
-			
-            // close the FTP connection
-            if (@function_exists("ftp_close")) @ftp_close($conn_id);
         }
+        @unlink(PMBP_EXPORT_DIR.$filename);
+        if (@function_exists("ftp_close")) {
+            @ftp_close($conn_id);
+        }
+        if (!$check) {
+            return "<div class=\"red\">" . F_FTP_3 . ".</div>\n";
+        }
+
+        // adjust file permissions on ftp server
+        //ftp_chmod($conn_id,substr(sprintf('%o', fileperms(PMBP_EXPORT_DIR.$filename)), -4),$filename);
+        return "<div class=\"green\">" . F_FTP_4 . " '" . $filename . "'.</div>\n";
+        // backup each file
+    }
+
+    // create all missing folders
+    $out = '';
+    foreach($files as $filepath) {
+        $filepath = trim($filepath);
+        if (!$filepath) {
+            continue;
+        }
+        $folders = explode("/", $filepath);
+        $filename = array_pop($folders);
+        $deep = 0;
+        $all_folders = "";
+        foreach ($folders as $folder) {
+            if ($folder === "." || $folder === "..") {
+                continue;
+            }
+            if (!@ftp_chdir($conn_id, $folder)) {
+                @ftp_mkdir($conn_id, $folder);
+                @ftp_chdir($conn_id, $folder);
+            }
+            $all_folders .= $folder . "/";
+            $deep++;
+        }
+
+        // change back to $path
+        $rel_path = "";
+        $rel_path .= str_repeat("../", $deep);
+        @ftp_chdir($conn_id, $rel_path);
+
+        // define the source and destination pathes
+        $dest_file = $all_folders . $filename;
+        $source_file = "./" . $filepath;
+
+        // try three times to upload
+        $check = FALSE;
+        for ($i = 0; $i < 3; $i++) {
+            if ($check) {
+                break;
+            }
+            $check = @ftp_put($conn_id, $dest_file, $source_file, FTP_BINARY);
+        }
+        if (!$check) {
+            $out .= sprintf(
+                '<div class="red">%s: \'%s\' -> \'%s\'.</div>',
+                F_FTP_3, $source_file, $dest_file
+            );
+            continue;
+        }
+        // adjust file permissions on ftp server
+        //ftp_chmod($conn_id,substr(sprintf('%o', fileperms($source_file)), -4),$dest_file);
+        $out .= sprintf(
+            '<div class="green">%s \'%s\'.</div>',
+            F_FTP_4, $dest_file
+        );
+    }
+    // close the FTP connection
+    if (@function_exists("ftp_close")) {
+        @ftp_close($conn_id);
     }
     return $out;
 }
